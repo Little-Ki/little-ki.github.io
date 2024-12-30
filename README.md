@@ -1,4 +1,4 @@
-# Blog Title :link: https://little-ki.github.io 
+# Little-Ki's blog : https://little-ki.github.io 
 ### :page_facing_up: [1](https://little-ki.github.io/tag.html) 
 ### :speech_balloon: 0 
 ### :hibiscus: 7 
