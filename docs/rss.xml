@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Tue, 31 Dec 2024 08:07:48 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【光栅化】光栅化：实际实现</title><link>https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-guang-zha-hua-%EF%BC%9A-shi-ji-shi-xian.html</link><description>译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-practical-implementation.html&#13;
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Tue, 31 Dec 2024 08:08:20 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【光栅化】光栅化：实际实现</title><link>https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-guang-zha-hua-%EF%BC%9A-shi-ji-shi-xian.html</link><description>译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-practical-implementation.html&#13;
 &#13;
 源代码：https://github.com/scratchapixel/scratchapixel-code/tree/main/rasterization-practical-implementation&#13;
 &#13;
@@ -17,7 +17,21 @@
 。</description><guid isPermaLink="true">https://little-ki.github.io/post/bei-zhuan-yi-de-fu-hao.html</guid><pubDate>Tue, 31 Dec 2024 01:57:21 +0000</pubDate></item><item><title>【光栅化】透视校正插值和顶点属性</title><link>https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-tou-shi-xiao-zheng-cha-zhi-he-ding-dian-shu-xing.html</link><description>译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/perspective-correct-interpolation-vertex-attributes.html&#13;
 &#13;
 # 插值顶点属性&#13;
-&amp;emsp;&amp;emsp;如前一章所述，重心坐标可用于插入三角形顶点位置处的任何变量。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-tou-shi-xiao-zheng-cha-zhi-he-ding-dian-shu-xing.html</guid><pubDate>Mon, 30 Dec 2024 15:30:46 +0000</pubDate></item><item><title>【光栅化】光栅化阶段</title><link>https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-guang-zha-hua-jie-duan.html</link><description>译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html&#13;
+&amp;emsp;&amp;emsp;如前一章所述，重心坐标可用于插入三角形顶点位置处的任何变量。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-tou-shi-xiao-zheng-cha-zhi-he-ding-dian-shu-xing.html</guid><pubDate>Mon, 30 Dec 2024 15:30:46 +0000</pubDate></item><item><title>【光栅化】可见性问题、深度缓冲算法和深度插值</title><link>https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-ke-jian-xing-wen-ti-%E3%80%81-shen-du-huan-chong-suan-fa-he-shen-du-cha-zhi.html</link><description>译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/visibility-problem-depth-buffer-depth-interpolation.html&#13;
+&#13;
+源代码：https://github.com/scratchapixel/scratchapixel-code/tree/main/rasterization-practical-implementation&#13;
+&#13;
+# 可见性问题、深度缓冲算法和深度插值&#13;
+&amp;emsp;&amp;emsp;在本课的第二章专门介绍将点投影到屏幕上的过程中，我们了解到投影点的第三个坐标（屏幕空间中的点，我们称之为 $`V_{Proj}`$）存储了原始顶点 $V$ 的 z 坐标（相机空间中点的 z 坐标）：&#13;
+```math&#13;
+\begin{array}{l}&#13;
+P_{\text{screen}}.x = \dfrac{ \text{near} \cdot P_{\text{camera}}.x }{ -P_{\text{camera}}.z}\\&#13;
+P_{\text{screen}}.y = \dfrac{ \text{near} \cdot P_{\text{camera}}.y }{ -P_{\text{camera}}.z}\\&#13;
+P_{\text{screen}}.z = -P_{\text{camera}}.z\\&#13;
+\end{array}&#13;
+```&#13;
+&#13;
+&amp;emsp;&amp;emsp;当一个像素与多个三角形重叠时，查找三角形表面上一点的 z 坐标非常有用。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-ke-jian-xing-wen-ti-%E3%80%81-shen-du-huan-chong-suan-fa-he-shen-du-cha-zhi.html</guid><pubDate>Mon, 30 Dec 2024 13:35:39 +0000</pubDate></item><item><title>【光栅化】光栅化阶段</title><link>https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-guang-zha-hua-jie-duan.html</link><description>译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-stage.html&#13;
 &#13;
 # 光栅化：我们要解决什么问题？&#13;
 &gt; 光栅化是将图元转换为二维图像的过程。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-guang-zha-hua-jie-duan.html</guid><pubDate>Mon, 30 Dec 2024 09:03:38 +0000</pubDate></item><item><title>【光栅化】投影阶段</title><link>https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-tou-ying-jie-duan.html</link><description>译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/projection-stage.html&#13;
