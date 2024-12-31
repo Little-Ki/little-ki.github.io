@@ -5,17 +5,21 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
-    
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekVercount.js'></script>
     <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
 <meta name="description" content="译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/overview-rasterization-algorithm.html
 
+源代码：https://github.com/scratchapixel/scratchapixel-code/tree/main/rasterization-practical-implementation
+
 # 前言
 &emsp;&emsp;光栅化渲染技术无疑是渲染3D场景图像最常用的技术。">
 <meta property="og:title" content="【光栅化】光栅化算法概述">
 <meta property="og:description" content="译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/overview-rasterization-algorithm.html
+
+源代码：https://github.com/scratchapixel/scratchapixel-code/tree/main/rasterization-practical-implementation
 
 # 前言
 &emsp;&emsp;光栅化渲染技术无疑是渲染3D场景图像最常用的技术。">
@@ -90,6 +94,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
     <div id="content">
 <div class="markdown-body" id="postBody"><p>译自：<a href="https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/overview-rasterization-algorithm.html" rel="nofollow">https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/overview-rasterization-algorithm.html</a></p>
+<p>源代码：<a href="https://github.com/scratchapixel/scratchapixel-code/tree/main/rasterization-practical-implementation">https://github.com/scratchapixel/scratchapixel-code/tree/main/rasterization-practical-implementation</a></p>
 <h1>前言</h1>
 <p>  光栅化渲染技术无疑是渲染3D场景图像最常用的技术。然而，它可能是所有技术中理解最少、记录最少的技术，尤其是与光线追踪相比。</p>
 <p>  造成这种情况的原因是多方面的。首先，这是一种过去的技术。这并不是说该技术已经过时——恰恰相反。大多数用于通过该算法生成图像的技术都是在 20 世纪 60 年代和 20 世纪 80 年代初开发的。在计算机图形领域，这一时期类似于中世纪，开发这些技术的论文知识往往会丢失。光栅化也是 GPU 用于生成 3D 图形的技术。尽管自 GPU 首次发明以来，硬件技术已经发生了显着的发展，但自 20 世纪 80 年代初以来，它们实现的用于生成图像的基本技术并没有太大变化。硬件已经发展，但形成图像的底层管道却没有发展。事实上，这些技术是如此基础，并且如此深入地集成在硬件架构中，以至于它们经常被忽视（只有设计 GPU 的人才真正了解它们的作用，而这远非一项微不足道的任务。然而，设计 GPU 和理解光栅化算法的原理是两个不同的挑战；因此，解释后者应该不那么困难）</p>
@@ -438,6 +443,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
-
+<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekTOC.js'></script><script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
 
 </html>
