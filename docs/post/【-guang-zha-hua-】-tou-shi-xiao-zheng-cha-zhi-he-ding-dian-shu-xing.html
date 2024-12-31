@@ -129,7 +129,7 @@ $$ST_P = \lambda_0 \cdot ST_0 + \lambda_1 \cdot ST_1 + \lambda_2 \cdot ST_2$$
 <p>  请务必记住，重心坐标是在屏幕空间中计算的。假设四边形由两个三角形组成。在 3D 空间中， $P$ 到 $V_1$ 和 $V_2$ 的距离相等，在 3D 空间的重心坐标为 ${0, 0.5, 0.5}$。然而，在屏幕空间 $P$ 离 $V_1$ 比离 $V_2$ 更近，$\lambda_1$ 大于 $\lambda_2$（且 $\lambda_3$  等于 0）。</p>
 <p>  问题是这样的：如果 $V_1 是白色而 $V_2 是黑色，那么 $P$ 的颜色应该是0.5。然而，如果 $\lambda_1$ 大于 $\lambda_2$，那么插值的结果将大于0.5，这清楚地表明我们的插值方法存在问题。假设如图 1 所示，$\lambda_1$ 和 $\lambda_2$ 分别为 0.666 和 0.334，对三角形的顶点颜色进行插值可得到：</p>
 $$C_P = \lambda_0 \cdot C_0 + \lambda_1 \cdot C_1 + \lambda_2 \cdot C_2 = 0 \cdot C_0 + 0.666 \cdot 1 + 0.334 \cdot 0 = 0.666$$
-<p>这导致 $P$ 值为 0.666 而不是预期的 0.5。这个问题是不是很像我们在上一章中插值顶点 z 坐标时遇到的问题？幸运的是，找到正确插入原始变量的正确方法也同样简单。</p>
+<p>  这导致 $P$ 值为 0.666 而不是预期的 0.5。这个问题是不是很像我们在上一章中插值顶点 z 坐标时遇到的问题？幸运的是，找到正确插入原始变量的正确方法也同样简单。</p>
 <h1>插值顶点属性</h1>
 <p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/60a18268-38f0-49bb-8760-53e154e43f65"><img src="https://github.com/user-attachments/assets/60a18268-38f0-49bb-8760-53e154e43f65" alt="persp-correct-interpo3" style="max-width: 100%;"></a></p>
 <blockquote>
