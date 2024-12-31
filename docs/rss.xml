@@ -1,5 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Tue, 31 Dec 2024 06:49:31 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>被转义的符号</title><link>https://little-ki.github.io/post/bei-zhuan-yi-de-fu-hao.html</link><description>```math&#13;
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Tue, 31 Dec 2024 08:07:48 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【光栅化】光栅化：实际实现</title><link>https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-guang-zha-hua-%EF%BC%9A-shi-ji-shi-xian.html</link><description>译自：https://www.scratchapixel.com/lessons/3d-basic-rendering/rasterization-practical-implementation/rasterization-practical-implementation.html&#13;
+&#13;
+源代码：https://github.com/scratchapixel/scratchapixel-code/tree/main/rasterization-practical-implementation&#13;
+&#13;
+# 改进光栅化算法&#13;
+&#13;
+## 锯齿和抗锯齿&#13;
+&amp;emsp;&amp;emsp;前面章节中介绍的技术奠定了光栅化算法的基础。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-guang-zha-hua-%E3%80%91-guang-zha-hua-%EF%BC%9A-shi-ji-shi-xian.html</guid><pubDate>Tue, 31 Dec 2024 08:07:09 +0000</pubDate></item><item><title>被转义的符号</title><link>https://little-ki.github.io/post/bei-zhuan-yi-de-fu-hao.html</link><description>```math&#13;
 \begin{array}{0}&#13;
 \lambda_0 &gt; 0 \\&#13;
 \lambda_1 &lt; 0&#13;
