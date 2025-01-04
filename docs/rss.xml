@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Sat, 04 Jan 2025 06:09:44 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【OpenGL】光照贴图</title><link>https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-guang-zhao-tie-tu.html</link><description>[原文](http://learnopengl.com/#!Lighting/Lighting-maps)&#13;
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Sat, 04 Jan 2025 06:15:43 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【OpenGL】光照贴图</title><link>https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-guang-zhao-tie-tu.html</link><description>[原文](http://learnopengl.com/#!Lighting/Lighting-maps)&#13;
 &#13;
 # 漫反射贴图与镜面光贴图&#13;
 &amp;emsp;&amp;emsp;两者都是纹理图像，在前文中材质的漫反射以及镜面光颜色在片段的任何位置都是一致的，为了能通过某种方式对物体的每个片段单独设置漫反射以及镜面光颜色。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-guang-zhao-tie-tu.html</guid><pubDate>Sat, 04 Jan 2025 06:09:20 +0000</pubDate></item><item><title>【OpenGL】材质</title><link>https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-cai-zhi.html</link><description>[原文](http://learnopengl.com/#!Lighting/Materials)&#13;
@@ -36,6 +36,11 @@ void glBindBuffer(GLenum target, GLuint buffer);&#13;
 // 上传数据至缓冲区[参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml)&#13;
 void glBufferData(GLenum target, GLsizeiptr size, const void * data, GLenum usage);&#13;
 void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void *data, GLenum usage);&#13;
+&#13;
+// 上传数据至缓冲区（部分）&#13;
+// [参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml)&#13;
+void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void * data);&#13;
+void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data);&#13;
 &#13;
 // 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)&#13;
 GLuint glCreateProgram(void);&#13;

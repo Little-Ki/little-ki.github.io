@@ -18,6 +18,11 @@ void glBindBuffer(GLenum target, GLuint buffer);
 void glBufferData(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
 void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void *data, GLenum usage);
 
+// 上传数据至缓冲区（部分）
+// [参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml)
+void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void * data);
+void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data);
+
 // 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)
 GLuint glCreateProgram(void);
 // 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)
@@ -183,13 +188,13 @@ glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 // 启用第 0 个属性
-glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vert), (void*)0);
 glEnableVertexAttribArray(0);
 // 启用第 1 个属性
-glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)sizeof(Pos));
+glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vert), (void*)sizeof(Pos));
 glEnableVertexAttribArray(1);
 // 启用第 2 个属性
-glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)(sizeof(Pos) + sizeof(Color)));
+glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vert), (void*)(sizeof(Pos) + sizeof(Color)));
 glEnableVertexAttribArray(2);
 ...
 // 启用着色器程序

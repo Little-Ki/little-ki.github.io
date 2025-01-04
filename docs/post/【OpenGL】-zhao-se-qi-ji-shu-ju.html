@@ -30,6 +30,11 @@ void glBindBuffer(GLenum target, GLuint buffer);
 void glBufferData(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
 void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void *data, GLenum usage);
 
+// 上传数据至缓冲区（部分）
+// [参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml)
+void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void * data);
+void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data);
+
 // 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)
 GLuint glCreateProgram(void);
 // 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)
@@ -108,6 +113,11 @@ void glBindBuffer(GLenum target, GLuint buffer);
 // 上传数据至缓冲区[参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml)
 void glBufferData(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
 void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void *data, GLenum usage);
+
+// 上传数据至缓冲区（部分）
+// [参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml)
+void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void * data);
+void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data);
 
 // 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)
 GLuint glCreateProgram(void);
@@ -258,6 +268,11 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="pl-smi">void</span> <span class="pl-en">glBufferData</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
 <span class="pl-smi">void</span> <span class="pl-en">glNamedBufferData</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span><span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
 
+<span class="pl-c">// 上传数据至缓冲区（部分）</span>
+<span class="pl-c">// [参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glBufferSubData</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLintptr</span> <span class="pl-s1">offset</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glNamedBufferSubData</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>, <span class="pl-smi">GLintptr</span> <span class="pl-s1">offset</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span><span class="pl-s1">data</span>);
+
 <span class="pl-c">// 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)</span>
 <span class="pl-smi">GLuint</span> <span class="pl-en">glCreateProgram</span>(<span class="pl-smi">void</span>);
 <span class="pl-c">// 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)</span>
@@ -403,13 +418,13 @@ unsigned <span class="pl-smi">int</span>[] <span class="pl-s1">indices</span> <s
 <span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-c1">EBO</span>);
 <span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">indices</span>), <span class="pl-s1">indices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);
 <span class="pl-c">// 启用第 0 个属性</span>
-<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">0</span>, <span class="pl-c1">3</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-c1">3</span> <span class="pl-c1">*</span> <span class="pl-k">sizeof</span>(<span class="pl-smi">float</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-c1">0</span>);
+<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">0</span>, <span class="pl-c1">3</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">Vert</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-c1">0</span>);
 <span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">0</span>);
 <span class="pl-c">// 启用第 1 个属性</span>
-<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">1</span>, <span class="pl-c1">4</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-c1">4</span> <span class="pl-c1">*</span> <span class="pl-k">sizeof</span>(<span class="pl-smi">float</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-k">sizeof</span>(<span class="pl-s1">Pos</span>));
+<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">1</span>, <span class="pl-c1">4</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">Vert</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-k">sizeof</span>(<span class="pl-s1">Pos</span>));
 <span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">1</span>);
 <span class="pl-c">// 启用第 2 个属性</span>
-<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">2</span>, <span class="pl-c1">2</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-c1">2</span> <span class="pl-c1">*</span> <span class="pl-k">sizeof</span>(<span class="pl-smi">float</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)(<span class="pl-k">sizeof</span>(<span class="pl-s1">Pos</span>) <span class="pl-c1">+</span> <span class="pl-k">sizeof</span>(<span class="pl-s1">Color</span>)));
+<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">2</span>, <span class="pl-c1">2</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">Vert</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)(<span class="pl-k">sizeof</span>(<span class="pl-s1">Pos</span>) <span class="pl-c1">+</span> <span class="pl-k">sizeof</span>(<span class="pl-s1">Color</span>)));
 <span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">2</span>);
 ...
 <span class="pl-c">// 启用着色器程序</span>
