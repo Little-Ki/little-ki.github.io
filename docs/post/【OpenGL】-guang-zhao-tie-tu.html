@@ -91,7 +91,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <div id="content">
 <div class="markdown-body" id="postBody"><p><a href="http://learnopengl.com/#!Lighting/Lighting-maps" rel="nofollow">原文</a></p>
 <h1>漫反射贴图与镜面光贴图</h1>
-<p>  两者都是纹理图像，在前文中材质的漫反射以及镜面光颜色在片段的任何位置都是一致的，为了能通过某种方式对物体的每个片段单独设置漫反射以及镜面光颜色。可用为其分配贴图并通过采样获取，同时由于环境光颜色在几乎所有情况下都等于漫反射颜色，所以可以将其省略：</p>
+<p>  两者都是纹理图像，在前文中材质的漫反射以及镜面光颜色在片段的任何位置都是一致的，为了能通过某种方式对物体的每个片段单独设置漫反射以及镜面光颜色。可为其分配贴图并通过采样获取，同时由于环境光颜色在几乎所有情况下都等于漫反射颜色，所以可以将其省略：</p>
 <div class="highlight highlight-source-glsl"><pre class="notranslate"><span class="pl-k">struct</span> Material {
     <span class="pl-k">sampler2D</span> diffuse;
     <span class="pl-k">sampler2D</span> specular;
