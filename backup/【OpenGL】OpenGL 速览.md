@@ -3,6 +3,8 @@
 
 # 基本语法
 ## 着色器基本结构
+一个典型的着色器有下面的结构：
+
 ```glsl
 #version version_number
 in type in_variable_name;
@@ -21,10 +23,13 @@ void main()
 }
 ```
 
-<details><summary>顶点着色器示例</summary>
+<details><summary>着色器示例</summary>
+
 
 ```glsl
 #version 330 core
+// 顶点着色器
+
 layout (location = 0) in vec3 aPos; // 输入坐标
 
 out vec4 color; // 为片段着色器指定一个颜色输出
@@ -35,12 +40,11 @@ void main()
     color = vec4(0.5, 0.0, 0.0, 1.0); // 输出颜色
 }
 ```
-</details>
-
-<details><summary>片段着色器示例</summary>
 
 ```glsl
 #version 330 core
+// 片段着色器
+
 out vec4 FragColor;
 
 in vec4 color; // 从顶点着色器传来的输入变量（名称相同、类型相同）
@@ -50,17 +54,31 @@ void main()
     FragColor = color;
 }
 ```
+
 </details>
 
 # 数据类型
+
 ## 基础数据类型
+GLSL和其他编程语言一样，GLSL有数据类型可以来指定变量的种类。GLSL中包含C等其它语言大部分的默认基础数据类型：`int`、`float`、`double`、`uint`和`bool`。GLSL也有两种容器类型，分别是向量(Vector)和矩阵(Matrix)。
+
+## 向量
+GLSL中的向量是一个可以包含有2、3或者4个分量的容器，分量的类型可以是前面默认基础类型的任意一个。它们可以是下面的形式（N代表分量的数量）：
 | 类型 | 描述 |
 | :-:  | :-: |
-| void |   空类型 |
-| bool |   布尔型 | 
-| int    |  整型   |
-| uint  |  无符号整型   |
-| float |  浮点型  |
+| vecN |  包含N个float分量的默认向量 |
+| ivecN | 包含N个int分量的向量 | 
+| uvecN | 包含N个uint分量的向量 |
+| bvecN | 包含N个bool分量的向量 |
+| dvecN | 包含N个double分量的向量 |
+
+## 矩阵
+
+GLSL中的矩阵是一个可以包含有M * N个分量的容器，其中 N 和 M 可以是2、3、4，分量的类型可以是前面默认基础类型的任意一个。它们可以是下面的形式：
+| 类型 | 描述 |
+| :-: | :-: |
+| matN | NxN 大小的浮点型矩阵 |
+| matMxN | M行N列的浮点型矩阵（OpenGl的矩阵是列主顺序的） |
 
 ## 纹理采样类型
 | 类型 | 描述 |
@@ -69,24 +87,8 @@ void main()
 | sampler2D |  二维纹理句柄 | 
 | sampler3D |  三维纹理句柄   |
 | samplerCube |  CubeMap 纹理句柄  |
-| sampler1DShadow |  一维深度纹理句柄 |
+| sampler1DShadow | 一维深度纹理句柄 |
 | sampler2DShadow | 二维深度纹理句柄 |
-
-## 聚合类型
-| 类型 | 描述 |
-| :-:  | :-: |
-| vec2,vec3,vec4 |  N分量浮点向量 |
-| ivec2,ivec3,ivec4 | N分量整型向量 | 
-| uvec2,uvec3,uvec4 | N分量无符号整型向量 |
-| bvec2,vbec3,bvec4 | N分量无符号布尔型向量 |
-
-## 矩阵类型
-| 类型 | 描述 |
-| :-: | :-: |
-| mat2 & mat2x2 | 2x2 浮点型矩阵 |
-| mat3 & mat3x3 | 3x3 浮点型矩阵 | 
-| mat4 & mat4x4 | 4x4 浮点型矩阵 |
-| matNxM | N行M列的浮点型矩阵（OpenGl的矩阵是列主顺序的） |
 
 ## 结构体
 ```glsl
@@ -111,47 +113,6 @@ vec2 d[2] = vec2[2](vec2(1.0, 2.0),vec2(3.0, 4.0));
 // 数组类型内建了一个length()函数，可以返回数组的长度。
 lightPositions.length()
 ```
-
-## 类型转换
-> glsl 不支持隐式转换，必须显示地声明要转换的类型，格式为 `(type)val`
-
-## 精度限定
-```glsl
-// glsl 可通过限定符生命浮点数精度大小以适配不同水平的设备，在变量前面加上 highp mediump lowp 声明精度
-lowp float a;
-varying mediump vec2 b;
-lowp ivec2 c(lowp mat3);
-highp mat4 d;
-
-// 或在着色器代码头部加上以声明默认精度
-precision mediump float;
-
-// invariant关键字：确保变量在不同着色器中精度一致
-#pragma STDGL invariant(all) // 所有输出变量为 invariant
-invariant out texCoord; // varying在传递数据的时候声明为invariant
-```
-
-## 修饰符
-1、变量存储限定符
->
-| 限定符 | 描述 |
-| :-: | :-: |
-|  |（默认的可省略）只是普通的本地变量，可读可写，外部不可见，外部不可访问 |
-| const | 常量值必须在声明时初始化，它是只读的不可修改的 | 
-| in, out | 着色器的输入输出，用于在着色器之间传递变量。例如颜色或者纹理坐标，（插值后的数据）作为片段着色器的只读输入数据。必须是全局范围声明的全局变量。可以是浮点数类型的标量，向量，矩阵。不能是数组或者结构体。 |
-| attribute | 表示只读的顶点数据，只用在顶点着色器中。数据来自当前的顶点状态或者顶点数组。它必须是全局范围声明的，不能再函数内部。一个 attribute 可以是浮点数类型的标量，向量，或者矩阵。不可以是数组或则结构体 |
-| invariant | （不变量）用于表示顶点着色器的输出和任何匹配片段着色器的输入，在不同的着色器中计算产生的值必须是一致的。所有的数据流和控制流，写入一个 invariant 变量的是一致的。编译器为了保证结果是完全一致的，需要放弃那些可能会导致不一致值的潜在的优化。除非必要，不要使用这个修饰符。在多通道渲染中避免 z-fighting 可能会使用到。|
-
-2、函数参数限定符
-> GLSL 允许自定义函数，但参数默认是以值形式（in 限定符）传入的，也就是说任何变量在传入时都会被拷贝一份，若想以引用方式传参，需要增加函数参数限定符。
->
-| 限定符 | 描述 |
-| :-: | :-: |
-| in | 用在函数的参数中，表示这个参数是输入的，在函数中改变这个值，并不会影响对调用的函数产生副作用。（相当于C语言的传值），这个是函数参数默认的修饰符 |
-| out | 用在函数的参数中，表示该参数是输出参数，值是会改变的。 | 
-| inout | 用在函数的参数，表示这个参数即是输入参数也是输出参数。 |
-
-> 其中使用 inout 方式传递的参数便与其他 OOP 语言中的引用传递类似，参数可读写，函数内对参数的修改会影响到传入参数本身。
 
 # 内置变量和函数
 ## 内置变量
@@ -288,25 +249,8 @@ bvec not(bvec x) // bool矢量的逐分量取反
 > 图像纹理有两种 一种是平面2d纹理,另一种是盒纹理,针对不同的纹理类型有不同访问方法.
 > 纹理查询的最终目的是从sampler中提取指定坐标的颜色信息. 函数中带有Cube字样的是指 需要传入盒状纹理. 带有Proj字样的是指带投影的版本.
 ```glsl
-// 以下函数只在顶点着色器中可用
-vec4 texture2DLod(sampler2D sampler, vec2 coord, float lod);
-vec4 texture2DProjLod(sampler2D sampler, vec3 coord, float lod);
-vec4 texture2DProjLod(sampler2D sampler, vec4 coord, float lod);
-vec4 textureCubeLod(samplerCube sampler, vec3 coord, float lod);
-```
-
-```glsl
-// 以下函数只在片段着色器中可用
-vec4 texture2D(sampler2D sampler, vec2 coord, float bias);
-vec4 texture2DProj(sampler2D sampler, vec3 coord, float bias);
-vec4 texture2DProj(sampler2D sampler, vec4 coord, float bias);
-vec4 textureCube(samplerCube sampler, vec3 coord, float bias);
-```
-
-```glsl
-// 在两者中都可用
-vec4 texture2D(sampler2D sampler, vec2 coord);
-vec4 texture2DProj(sampler2D sampler, vec3 coord);
-vec4 texture2DProj(sampler2D sampler, vec4 coord);
-vec4 textureCube(samplerCube sampler, vec3 coord);
+vec4 texture(sampler2D sampler, vec2 coord);
+vec4 texture(samplerCube sampler, vec3 coord);
+vec4 textureProj(sampler2D sampler, vec3 coord);
+vec4 textureProj(sampler2D sampler, vec4 coord);
 ```
