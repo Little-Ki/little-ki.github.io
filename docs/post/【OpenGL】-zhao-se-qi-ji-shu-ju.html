@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekVercount.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="> 术语：
+> 顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换
+> 顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组
+> 元素缓冲对象：Element Buffer Object，EBO 或 索引缓冲对象 Index Buffer Object，IBO，保存了要绘制的顶点在数组中的索引
+# API
+```c
+// 生成顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml)
+void glGenVertexArrays(GLsizei n, GLuint *arrays);
+// 绑定顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindVertexArray.xhtml)
+void glBindVertexArray(GLuint array);
+
+// 申请缓冲区 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml)
+void glGenBuffers(GLsizei n, GLuint * buffers);
+// 将缓冲区绑定至目标 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml)
+void glBindBuffer(GLenum target, GLuint buffer);
+
+// 上传数据至缓冲区[参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml)
+void glBufferData(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
+void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void *data, GLenum usage);
+
+// 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)
+GLuint glCreateProgram(void);
+// 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)
+void glAttachShader(GLuint program, GLuint shader);
+// 链接着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glLinkProgram.xhtml)
+void glLinkProgram(GLuint program);
+// 获取着色器程序参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)
+void glGetProgramiv(GLuint program, GLenum pname, GLint *params);
+// 删除着色器程序
+void glDeleteProgram(GLuint program);
+
+// 创建着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml)
+GLuint glCreateShader(GLenum shaderType);
+// 设置着色器代码 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml)
+void glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
+// 编译着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCompileShader.xhtml)
+void glCompileShader(GLuint shader);
+// 获取着色器参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)
+void glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
+// 删除着色器
+void glDeleteShader(GLuint shader);
+
+// 定义通用顶点属性数据的数组
+// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml)
+void glVertexAttribPointer(
+	GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
+void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void * pointer);
+void glVertexAttribLPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void * pointer);
+
+// 使用索引绘制顶点 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml)
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void * indices);
+```
+# 顶点数组对象（VAO）
+```c
+unsigned int VAO;
+// 申请一个顶点数组对象
+// 一个数组对象关联了一个VBO / EBO
+// 当在多个不同的VBO / EBO之间切换时，使用此方法
+glGenVertexArrays(1, &VAO);
+// 绑定VAO
+glBindVertexArray(VAO);
+// 之后的操作将在其上进行
+```
+
+# 顶点缓冲对象（VBO）
+```c
+float vertices[] = {
+    -0.5f, -0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
+     0.0f,  0.5f, 0.0f 
+};
+unsigned int VBO;
+// 申请了一个顶点缓冲区
+glGenBuffers(1, &VBO);
+// 绑定至 GL_ARRAY_BUFFER
+glBindBuffer(GL_ARRAY_BUFFER, VBO);  
+// 上传数据 其中第四个参数指定了如何管理数据
+// GL_STATIC_DRAW ：数据不会或几乎不会改变。">
+<meta property="og:title" content="【OpenGL】着色器及数据">
+<meta property="og:description" content="> 术语：
+> 顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换
+> 顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组
+> 元素缓冲对象：Element Buffer Object，EBO 或 索引缓冲对象 Index Buffer Object，IBO，保存了要绘制的顶点在数组中的索引
+# API
+```c
+// 生成顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml)
+void glGenVertexArrays(GLsizei n, GLuint *arrays);
+// 绑定顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindVertexArray.xhtml)
+void glBindVertexArray(GLuint array);
+
+// 申请缓冲区 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml)
+void glGenBuffers(GLsizei n, GLuint * buffers);
+// 将缓冲区绑定至目标 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml)
+void glBindBuffer(GLenum target, GLuint buffer);
+
+// 上传数据至缓冲区[参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml)
+void glBufferData(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
+void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void *data, GLenum usage);
+
+// 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)
+GLuint glCreateProgram(void);
+// 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)
+void glAttachShader(GLuint program, GLuint shader);
+// 链接着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glLinkProgram.xhtml)
+void glLinkProgram(GLuint program);
+// 获取着色器程序参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)
+void glGetProgramiv(GLuint program, GLenum pname, GLint *params);
+// 删除着色器程序
+void glDeleteProgram(GLuint program);
+
+// 创建着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml)
+GLuint glCreateShader(GLenum shaderType);
+// 设置着色器代码 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml)
+void glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
+// 编译着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCompileShader.xhtml)
+void glCompileShader(GLuint shader);
+// 获取着色器参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)
+void glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
+// 删除着色器
+void glDeleteShader(GLuint shader);
+
+// 定义通用顶点属性数据的数组
+// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml)
+void glVertexAttribPointer(
+	GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
+void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void * pointer);
+void glVertexAttribLPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void * pointer);
+
+// 使用索引绘制顶点 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml)
+void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void * indices);
+```
+# 顶点数组对象（VAO）
+```c
+unsigned int VAO;
+// 申请一个顶点数组对象
+// 一个数组对象关联了一个VBO / EBO
+// 当在多个不同的VBO / EBO之间切换时，使用此方法
+glGenVertexArrays(1, &VAO);
+// 绑定VAO
+glBindVertexArray(VAO);
+// 之后的操作将在其上进行
+```
+
+# 顶点缓冲对象（VBO）
+```c
+float vertices[] = {
+    -0.5f, -0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
+     0.0f,  0.5f, 0.0f 
+};
+unsigned int VBO;
+// 申请了一个顶点缓冲区
+glGenBuffers(1, &VBO);
+// 绑定至 GL_ARRAY_BUFFER
+glBindBuffer(GL_ARRAY_BUFFER, VBO);  
+// 上传数据 其中第四个参数指定了如何管理数据
+// GL_STATIC_DRAW ：数据不会或几乎不会改变。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-zhao-se-qi-ji-shu-ju.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>【OpenGL】着色器及数据</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">【OpenGL】着色器及数据</h1>
+<div class="title-right">
+    <a href="https://little-ki.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Little-Ki/little-ki.github.io/issues/12" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><blockquote>
+<p>术语：<br>
+顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换<br>
+顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组<br>
+元素缓冲对象：Element Buffer Object，EBO 或 索引缓冲对象 Index Buffer Object，IBO，保存了要绘制的顶点在数组中的索引</p>
+</blockquote>
+<h1>API</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 生成顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGenVertexArrays</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span><span class="pl-s1">arrays</span>);
+<span class="pl-c">// 绑定顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindVertexArray.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glBindVertexArray</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">array</span>);
+
+<span class="pl-c">// 申请缓冲区 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGenBuffers</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span> <span class="pl-s1">buffers</span>);
+<span class="pl-c">// 将缓冲区绑定至目标 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glBindBuffer</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>);
+
+<span class="pl-c">// 上传数据至缓冲区[参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glBufferData</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glNamedBufferData</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span><span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
+
+<span class="pl-c">// 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)</span>
+<span class="pl-smi">GLuint</span> <span class="pl-en">glCreateProgram</span>(<span class="pl-smi">void</span>);
+<span class="pl-c">// 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glAttachShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>);
+<span class="pl-c">// 链接着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glLinkProgram.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glLinkProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>);
+<span class="pl-c">// 获取着色器程序参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGetProgramiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>);
+<span class="pl-c">// 删除着色器程序</span>
+<span class="pl-smi">void</span> <span class="pl-en">glDeleteProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>);
+
+<span class="pl-c">// 创建着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml)</span>
+<span class="pl-smi">GLuint</span> <span class="pl-en">glCreateShader</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">shaderType</span>);
+<span class="pl-c">// 设置着色器代码 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glShaderSource</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">count</span>, <span class="pl-k">const</span> <span class="pl-smi">GLchar</span> <span class="pl-c1">*</span><span class="pl-c1">*</span><span class="pl-s1">string</span>, <span class="pl-k">const</span> <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">length</span>);
+<span class="pl-c">// 编译着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCompileShader.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glCompileShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>);
+<span class="pl-c">// 获取着色器参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGetShaderiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>);
+<span class="pl-c">// 删除着色器</span>
+<span class="pl-smi">void</span> <span class="pl-en">glDeleteShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>);
+
+<span class="pl-c">// 定义通用顶点属性数据的数组</span>
+<span class="pl-c">// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribPointer</span>(
+	<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLboolean</span> <span class="pl-s1">normalized</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribIPointer</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribLPointer</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
+
+<span class="pl-c">// 使用索引绘制顶点 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glDrawElements</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">mode</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">count</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">indices</span>);</pre></div>
+<h1>顶点数组对象（VAO）</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-c1">VAO</span>;
+<span class="pl-c">// 申请一个顶点数组对象</span>
+<span class="pl-c">// 一个数组对象关联了一个VBO / EBO</span>
+<span class="pl-c">// 当在多个不同的VBO / EBO之间切换时，使用此方法</span>
+<span class="pl-en">glGenVertexArrays</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-c1">VAO</span>);
+<span class="pl-c">// 绑定VAO</span>
+<span class="pl-en">glBindVertexArray</span>(<span class="pl-c1">VAO</span>);
+<span class="pl-c">// 之后的操作将在其上进行</span></pre></div>
+<h1>顶点缓冲对象（VBO）</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">float</span> <span class="pl-s1">vertices</span>[] <span class="pl-c1">=</span> {
+    <span class="pl-c1">-0.5f</span>, <span class="pl-c1">-0.5f</span>, <span class="pl-c1">0.0f</span>,
+     <span class="pl-c1">0.5f</span>, <span class="pl-c1">-0.5f</span>, <span class="pl-c1">0.0f</span>,
+     <span class="pl-c1">0.0f</span>,  <span class="pl-c1">0.5f</span>, <span class="pl-c1">0.0f</span> 
+};
+<span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-c1">VBO</span>;
+<span class="pl-c">// 申请了一个顶点缓冲区</span>
+<span class="pl-en">glGenBuffers</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-c1">VBO</span>);
+<span class="pl-c">// 绑定至 GL_ARRAY_BUFFER</span>
+<span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ARRAY_BUFFER</span>, <span class="pl-c1">VBO</span>);  
+<span class="pl-c">// 上传数据 其中第四个参数指定了如何管理数据</span>
+<span class="pl-c">// GL_STATIC_DRAW ：数据不会或几乎不会改变。</span>
+<span class="pl-c">// GL_DYNAMIC_DRAW：数据会被改变很多。</span>
+<span class="pl-c">// GL_STREAM_DRAW ：数据每次绘制时都会改变。</span>
+<span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">vertices</span>), <span class="pl-s1">vertices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);</pre></div>
+<h1>索引缓冲对象（EBO）</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 当顶点数较多，并且有大量三角形共用顶点，需要用此方式来减少数据量</span>
+<span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-c1">EBO</span>;
+<span class="pl-c">// 申请了一个索引缓冲区</span>
+<span class="pl-en">glGenBuffers</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-c1">EBO</span>);
+<span class="pl-c">// 绑定至 GL_ELEMENT_ARRAY_BUFFER</span>
+<span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-c1">EBO</span>);
+<span class="pl-c">// 上传索引数据</span>
+<span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">indices</span>), <span class="pl-s1">indices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);</pre></div>
+<h1>编译着色器</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-smi">char</span> <span class="pl-c1">*</span><span class="pl-s1">shaderSource</span><span class="pl-c1">=</span> <span class="pl-s">"......"</span>;
+<span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-s1">shaderId</span>;
+<span class="pl-c">// 参数可以为 GL_COMPUTE_SHADER，GL_VERTEX_SHADER</span>
+<span class="pl-c">// GL_TESS_CONTROL_SHADER，GL_TESS_EVALUATION_SHADER</span>
+<span class="pl-c">// GL_GEOMETRY_SHADER，GL_FRAGMENT_SHADER</span>
+<span class="pl-s1">shaderId</span><span class="pl-c1">=</span> <span class="pl-en">glCreateShader</span>(...);
+<span class="pl-en">glShaderSource</span>(<span class="pl-s1">shaderId</span>, <span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">shaderSource</span>, <span class="pl-c1">NULL</span>);
+<span class="pl-en">glCompileShader</span>(<span class="pl-s1">shaderId</span>);
+...
+<span class="pl-c">// 检查是否编译成功</span>
+<span class="pl-en">glGetShaderiv</span>(<span class="pl-s1">shaderId</span>, <span class="pl-c1">GL_COMPILE_STATUS</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">success</span>);
+<span class="pl-k">if</span>(!<span class="pl-s1">success</span>)
+{
+    <span class="pl-en">glGetShaderInfoLog</span>(<span class="pl-s1">shaderId</span>, <span class="pl-c1">512</span>, <span class="pl-c1">NULL</span>, <span class="pl-s1">infoLog</span>);
+    ...
+}
+
+<span class="pl-c">// 不再使用时</span>
+<span class="pl-en">glDeleteShader</span>(<span class="pl-s1">shadeId</span>);</pre></div>
+<h1>着色器程序</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-s1">programId</span>;
+<span class="pl-s1">programId</span><span class="pl-c1">=</span> <span class="pl-en">glCreateProgram</span>();
+<span class="pl-c">// ... 编译顶点着色器，将其附加到程序</span>
+<span class="pl-en">glAttachShader</span>(<span class="pl-s1">programId</span>, <span class="pl-s1">vertexShader</span>);
+<span class="pl-c">// ... 编译片段着色器，将其附加到程序</span>
+<span class="pl-en">glAttachShader</span>(<span class="pl-s1">programId</span>, <span class="pl-s1">fragmentShader</span>);
+<span class="pl-c">// 链接着色器程序</span>
+<span class="pl-en">glLinkProgram</span>(<span class="pl-s1">programId</span>);
+...
+<span class="pl-c">// 检查是否链接成功</span>
+<span class="pl-en">glGetProgramiv</span>(<span class="pl-s1">programId</span>, <span class="pl-c1">GL_LINK_STATUS</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">success</span>);
+<span class="pl-k">if</span>(!<span class="pl-s1">success</span>) {
+    <span class="pl-en">glGetProgramInfoLog</span>(<span class="pl-s1">programId</span>, <span class="pl-c1">512</span>, <span class="pl-c1">NULL</span>, <span class="pl-s1">infoLog</span>);
+    ...
+}
+
+<span class="pl-c">// 不再使用时</span>
+<span class="pl-en">glDeleteProgram</span>(<span class="pl-s1">programId</span>);</pre></div>
+<h1>链接顶点属性</h1>
+<blockquote>
+<p>着色器需要知道顶点所包含的数据，一个顶点可以包含如坐标、颜色、纹理坐标等多个参数<br>
+需要由用户声明每个参数的属性，告诉OpenGL该如何解析顶点数据</p>
+</blockquote>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 声明了一个顶点参数 位置为 0（对应着色器内的 location），包含 3 个分量，分量属性为float，不启用归一化</span>
+<span class="pl-c">// 大小为 3 * sizeof(float)，相对偏移（在结构体内的偏移）为 0</span>
+<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">0</span>, <span class="pl-c1">3</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-c1">3</span> <span class="pl-c1">*</span> <span class="pl-k">sizeof</span>(<span class="pl-smi">float</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-c1">0</span>);
+<span class="pl-c">// 启用位置 0 的顶点属性</span>
+<span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">0</span>);</pre></div>
+<h1>代码示例</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">struct</span> <span class="pl-smi">Color</span> {
+	<span class="pl-smi">float</span> <span class="pl-c1">r</span>, <span class="pl-c1">g</span>, <span class="pl-c1">b</span>, <span class="pl-c1">a</span>;
+};
+<span class="pl-k">struct</span> <span class="pl-smi">Pos</span> {
+	<span class="pl-smi">float</span> <span class="pl-c1">x</span>, <span class="pl-c1">y</span>, <span class="pl-c1">z</span>;
+};
+<span class="pl-k">struct</span> <span class="pl-smi">TexCoord</span> {
+	<span class="pl-smi">float</span> <span class="pl-c1">u</span>, <span class="pl-c1">v</span>;
+};
+<span class="pl-k">struct</span> <span class="pl-smi">Vert</span> {
+	<span class="pl-smi">Pos</span> <span class="pl-c1">pos</span>;
+	<span class="pl-smi">Color</span> <span class="pl-c1">col</span>;
+	<span class="pl-smi">TexCoord</span> <span class="pl-c1">uv</span>;
+};
+
+<span class="pl-smi">GLuint</span> <span class="pl-s1">vao</span>, <span class="pl-s1">vbo</span>, <span class="pl-s1">ebo</span>, <span class="pl-s1">vs</span>, <span class="pl-s1">fs</span>, <span class="pl-s1">program</span>;
+<span class="pl-s1">Vert</span>[] <span class="pl-s1">vertices</span> <span class="pl-c1">=</span> { ... };
+unsigned <span class="pl-smi">int</span>[] <span class="pl-s1">indices</span> <span class="pl-c1">=</span> { ... };
+<span class="pl-c">// ... 编译顶点着色器与片段着色器</span>
+<span class="pl-c">// ... 创建着色器程序，附加着色器并链接</span>
+<span class="pl-c">// ... 创建VAO，VBO，EBO</span>
+<span class="pl-c">// 绑定VAO</span>
+<span class="pl-en">glBindVertexArray</span>(<span class="pl-c1">VAO</span>);
+<span class="pl-c">// 绑定VBO</span>
+<span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ARRAY_BUFFER</span>, <span class="pl-c1">VBO</span>);
+<span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">vertices</span>), <span class="pl-s1">vertices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);
+<span class="pl-c">// 绑定EBO</span>
+<span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-c1">EBO</span>);
+<span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">indices</span>), <span class="pl-s1">indices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);
+<span class="pl-c">// 启用第 0 个属性</span>
+<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">0</span>, <span class="pl-c1">3</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-c1">3</span> <span class="pl-c1">*</span> <span class="pl-k">sizeof</span>(<span class="pl-smi">float</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-c1">0</span>);
+<span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">0</span>);
+<span class="pl-c">// 启用第 1 个属性</span>
+<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">1</span>, <span class="pl-c1">4</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-c1">4</span> <span class="pl-c1">*</span> <span class="pl-k">sizeof</span>(<span class="pl-smi">float</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-k">sizeof</span>(<span class="pl-s1">Pos</span>));
+<span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">1</span>);
+<span class="pl-c">// 启用第 2 个属性</span>
+<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">2</span>, <span class="pl-c1">2</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-c1">2</span> <span class="pl-c1">*</span> <span class="pl-k">sizeof</span>(<span class="pl-smi">float</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)(<span class="pl-k">sizeof</span>(<span class="pl-s1">Pos</span>) <span class="pl-c1">+</span> <span class="pl-k">sizeof</span>(<span class="pl-s1">Color</span>)));
+<span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">2</span>);
+...
+<span class="pl-c">// 启用着色器程序</span>
+<span class="pl-en">glUseProgram</span>(<span class="pl-s1">programId</span>);
+<span class="pl-c">// 使用该VAO关联的顶点</span>
+<span class="pl-en">glBindVertexArray</span>(<span class="pl-s1">vao</span>);
+<span class="pl-c">// 使用顶点及其索引绘制三角洲</span>
+<span class="pl-c">// 绘制方式为 GL_TRIANGLES，可以是以下之一 </span>
+<span class="pl-c">// GL_POINTS，GL_LINE_STRIP，GL_LINE_LOOP，GL_LINES，GL_LINE_STRIP_ADJACENCY，</span>
+<span class="pl-c">// GL_LINES_ADJACENCY，GL_TRIANGLE_STRIP，GL_TRIANGLE_FAN，GL_TRIANGLES，</span>
+<span class="pl-c">// GL_TRIANGLE_STRIP_ADJACENCY，GL_TRIANGLES_ADJACENCY、GL_PATCHES</span>
+<span class="pl-c">// 索引数量为, sizeof(indices)</span>
+<span class="pl-c">// 起始偏移为 0</span>
+<span class="pl-c">// 索引数据类型为 unsigned int</span>
+<span class="pl-en">glDrawElements</span>(<span class="pl-c1">GL_TRIANGLES</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">indices</span>), <span class="pl-c1">GL_UNSIGNED_INT</span>, <span class="pl-c1">0</span>);
+<span class="pl-en">glBindVertexArray</span>(<span class="pl-c1">0</span>);</pre></div>
+<details><summary>着色器参考</summary>
+<div class="highlight highlight-source-glsl"><pre class="notranslate"><span class="pl-k">#version</span> <span class="pl-c1">330</span> core
+<span class="pl-c"><span class="pl-c">//</span> 顶点着色器</span>
+<span class="pl-k">layout</span> (location<span class="pl-k">=</span><span class="pl-c1">0</span>) <span class="pl-k">in</span> <span class="pl-k">vec3</span> aPos;
+<span class="pl-k">layout</span> (location<span class="pl-k">=</span><span class="pl-c1">1</span>) <span class="pl-k">in</span> <span class="pl-k">vec4</span> aColor;
+<span class="pl-k">layout</span> (location<span class="pl-k">=</span><span class="pl-c1">2</span>) <span class="pl-k">in</span> <span class="pl-k">vec2</span> aUV;
+
+<span class="pl-k">out</span> <span class="pl-k">vec2</span> iUV;
+<span class="pl-k">out</span> <span class="pl-k">vec4</span> iColor;
+
+<span class="pl-k">void</span> main()
+{
+    iUV <span class="pl-k">=</span> aUV;
+    iColor <span class="pl-k">=</span> aColor;
+    <span class="pl-c1">gl_Position</span><span class="pl-k">=</span><span class="pl-k">vec4</span>(aPos,<span class="pl-c1">1.0</span>)
+}</pre></div>
+<div class="highlight highlight-source-glsl"><pre class="notranslate"><span class="pl-k">#version</span> <span class="pl-c1">330</span> core
+<span class="pl-c"><span class="pl-c">//</span> 片段着色器</span>
+<span class="pl-k">out</span> <span class="pl-k">vec4</span> fragColor;
+
+<span class="pl-k">in</span> <span class="pl-k">vec2</span> iUV;
+<span class="pl-k">in</span> <span class="pl-k">vec4</span> iColor;
+
+<span class="pl-k">void</span> main()
+{
+    FragColor <span class="pl-k">=</span> iColor;
+}</pre></div>
+</details></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://little-ki.github.io">Little-Ki's blog</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Little-Ki/little-ki.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekTOC.js'></script><script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
+
+</html>
