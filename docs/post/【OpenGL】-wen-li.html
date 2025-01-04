@@ -10,9 +10,9 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="> 纹理可以是1D / 2D / 3D，用来添加物体的细节。">
+<meta name="description" content="> 纹理可以是1D / 2D / 3D 以及立方体贴图，用来添加物体的细节。">
 <meta property="og:title" content="【OpenGL】纹理">
-<meta property="og:description" content="> 纹理可以是1D / 2D / 3D，用来添加物体的细节。">
+<meta property="og:description" content="> 纹理可以是1D / 2D / 3D 以及立方体贴图，用来添加物体的细节。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-wen-li.html">
 <meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
@@ -84,7 +84,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
     <div id="content">
 <div class="markdown-body" id="postBody"><blockquote>
-<p>纹理可以是1D / 2D / 3D，用来添加物体的细节。</p>
+<p>纹理可以是1D / 2D / 3D 以及立方体贴图，用来添加物体的细节。</p>
 </blockquote>
 <h1>API</h1>
 <div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 生成纹理 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenTextures.xhtml)</span>
@@ -175,14 +175,34 @@ GL_LINEAR：线性插值，在采样点及其附近像素点进行插值计算�
 <h1>多级渐远纹理（MipMap）</h1>
 <blockquote>
 <p>此方式为单个纹理生成不同大小的纹理图像，并根据顶点距离来决定采样哪一个纹理，用于优化采样速度<br>
-OpenGL 具有函数 glGenerateMipmap 用于自动生成纹理，使用以下参数指定生成纹理时的采样方式<br>
-| 采样方式 | 行为 |<br>
-| :-: | :-: |<br>
-| GL_NEAREST_MIPMAP_NEAREST | 使用最邻近的多级渐远纹理来匹配像素大小，并使用邻近插值进行纹理采样 |<br>
-| GL_LINEAR_MIPMAP_NEAREST | 使用最邻近的多级渐远纹理级别，并使用线性插值进行采样 |<br>
-| GL_NEAREST_MIPMAP_LINEAR | 在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样 |<br>
-| GL_LINEAR_MIPMAP_LINEAR | 在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样 |</p>
+OpenGL 具有函数 glGenerateMipmap 用于自动生成纹理，使用以下参数指定生成纹理时的采样方式</p>
 </blockquote>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th align="center">采样方式</th>
+<th align="center">行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">GL_NEAREST_MIPMAP_NEAREST</td>
+<td align="center">使用最邻近的多级渐远纹理来匹配像素大小，并使用邻近插值进行纹理采样</td>
+</tr>
+<tr>
+<td align="center">GL_LINEAR_MIPMAP_NEAREST</td>
+<td align="center">使用最邻近的多级渐远纹理级别，并使用线性插值进行采样</td>
+</tr>
+<tr>
+<td align="center">GL_NEAREST_MIPMAP_LINEAR</td>
+<td align="center">在两个最匹配像素大小的多级渐远纹理之间进行线性插值，使用邻近插值进行采样</td>
+</tr>
+<tr>
+<td align="center">GL_LINEAR_MIPMAP_LINEAR</td>
+<td align="center">在两个邻近的多级渐远纹理之间使用线性插值，并使用线性插值进行采样</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
 <div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 设置MipMap的采样方式</span>
 <span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_MIN_FILTER</span>, <span class="pl-c1">GL_LINEAR_MIPMAP_LINEAR</span>);
 <span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_MAG_FILTER</span>, <span class="pl-c1">GL_LINEAR</span>);</pre></div>
@@ -192,7 +212,58 @@ OpenGL 具有函数 glGenerateMipmap 用于自动生成纹理，使用以下参�
 <span class="pl-en">glBindTexture</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-s1">texture</span>); <span class="pl-c">// 绑定 2D 纹理到纹理 ID</span>
 <span class="pl-c">// 上传纹理数据 参数为 纹理模板 mipmap级别 颜色格式 图片宽度 图片高度 保留 颜色分量数据格式 指向图片数据的指针</span>
 <span class="pl-en">glTexImage2D</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">0</span>, <span class="pl-c1">GL_RGB</span>, <span class="pl-s1">width</span>, <span class="pl-s1">height</span>, <span class="pl-c1">0</span>, <span class="pl-c1">GL_RGB</span>, <span class="pl-c1">GL_UNSIGNED_BYTE</span>, <span class="pl-s1">data</span>);
-<span class="pl-en">glGenerateMipmap</span>(<span class="pl-c1">GL_TEXTURE_2D</span>);</pre></div></div>
+<span class="pl-en">glGenerateMipmap</span>(<span class="pl-c1">GL_TEXTURE_2D</span>);</pre></div>
+<h1>立方体贴图</h1>
+<blockquote>
+<p>立方体贴图是包含 6 个 2D 纹理的纹理，组成了一个带纹理的立方体，通过以下方式创建：</p>
+</blockquote>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-s1">textureID</span>;
+<span class="pl-en">glGenTextures</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">textureID</span>);
+<span class="pl-en">glBindTexture</span>(<span class="pl-c1">GL_TEXTURE_CUBE_MAP</span>, <span class="pl-s1">textureID</span>);</pre></div>
+<blockquote>
+<p>使用以下方式上传数据：</p>
+</blockquote>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-en">glTexImage2D</span>(
+  <span class="pl-c1">GL_TEXTURE_CUBE_MAP_POSITIVE_X</span> , 
+  <span class="pl-c1">0</span>, <span class="pl-c1">GL_RGB</span>, <span class="pl-s1">width</span>, <span class="pl-s1">height</span>, <span class="pl-c1">0</span>, <span class="pl-c1">GL_RGB</span>, <span class="pl-c1">GL_UNSIGNED_BYTE</span>, <span class="pl-s1">data</span>
+);</pre></div>
+<blockquote>
+<p>其中参数一可以是以下值：</p>
+</blockquote>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th align="center">纹理目标</th>
+<th align="center">方位</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">GL_TEXTURE_CUBE_MAP_POSITIVE_X</td>
+<td align="center">右</td>
+</tr>
+<tr>
+<td align="center">GL_TEXTURE_CUBE_MAP_NEGATIVE_X</td>
+<td align="center">左</td>
+</tr>
+<tr>
+<td align="center">GL_TEXTURE_CUBE_MAP_POSITIVE_Y</td>
+<td align="center">上</td>
+</tr>
+<tr>
+<td align="center">GL_TEXTURE_CUBE_MAP_NEGATIVE_Y</td>
+<td align="center">下</td>
+</tr>
+<tr>
+<td align="center">GL_TEXTURE_CUBE_MAP_POSITIVE_Z</td>
+<td align="center">后</td>
+</tr>
+<tr>
+<td align="center">GL_TEXTURE_CUBE_MAP_NEGATIVE_Z</td>
+<td align="center">前</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>

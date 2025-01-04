@@ -1,4 +1,4 @@
-> 纹理可以是1D / 2D / 3D，用来添加物体的细节。
+> 纹理可以是1D / 2D / 3D 以及立方体贴图，用来添加物体的细节。
 
 
 # API
@@ -77,6 +77,7 @@ glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 # 多级渐远纹理（MipMap）
 > 此方式为单个纹理生成不同大小的纹理图像，并根据顶点距离来决定采样哪一个纹理，用于优化采样速度
 > OpenGL 具有函数 glGenerateMipmap 用于自动生成纹理，使用以下参数指定生成纹理时的采样方式
+
 | 采样方式 | 行为 |
 | :-: | :-: |
 | GL_NEAREST_MIPMAP_NEAREST | 使用最邻近的多级渐远纹理来匹配像素大小，并使用邻近插值进行纹理采样 |
@@ -99,3 +100,32 @@ glBindTexture(GL_TEXTURE_2D, texture); // 绑定 2D 纹理到纹理 ID
 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 glGenerateMipmap(GL_TEXTURE_2D);
 ```
+
+# 立方体贴图
+> 立方体贴图是包含 6 个 2D 纹理的纹理，组成了一个带纹理的立方体，通过以下方式创建：
+
+```c
+unsigned int textureID;
+glGenTextures(1, &textureID);
+glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+```
+
+> 使用以下方式上传数据：
+
+```c
+glTexImage2D(
+  GL_TEXTURE_CUBE_MAP_POSITIVE_X , 
+  0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+);
+```
+
+> 其中参数一可以是以下值：
+
+| 纹理目标 | 方位 |
+| :-: | :-: |
+| GL_TEXTURE_CUBE_MAP_POSITIVE_X | 右 |
+| GL_TEXTURE_CUBE_MAP_NEGATIVE_X | 左 |
+| GL_TEXTURE_CUBE_MAP_POSITIVE_Y | 上 |
+| GL_TEXTURE_CUBE_MAP_NEGATIVE_Y | 下 |
+| GL_TEXTURE_CUBE_MAP_POSITIVE_Z | 后 |
+| GL_TEXTURE_CUBE_MAP_NEGATIVE_Z | 前 |
