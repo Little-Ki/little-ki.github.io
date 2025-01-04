@@ -1,5 +1,20 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Sat, 04 Jan 2025 03:45:40 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【OpenGL】着色器及数据</title><link>https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-zhao-se-qi-ji-shu-ju.html</link><description>&gt; 术语：&#13;
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Sat, 04 Jan 2025 05:50:54 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【OpenGL】材质</title><link>https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-cai-zhi.html</link><description>[原文](http://learnopengl.com/#!Lighting/Materials)&#13;
+&#13;
+# 材质&#13;
+&gt; 材质（Material）表示了光线是如何与物体进行交互的，当描述一个表面时，我们可以分别为三个光照分量定义一个材质颜色(Material Color)：环境光照(Ambient Lighting)、漫反射光照(Diffuse Lighting)和镜面光照(Specular Lighting)：&#13;
+```glsl&#13;
+#version 330 core&#13;
+struct Material {&#13;
+    vec3 ambient;&#13;
+    vec3 diffuse;&#13;
+    vec3 specular;&#13;
+    float shininess;&#13;
+}; &#13;
+  &#13;
+uniform Material material;&#13;
+```&#13;
+&amp;emsp;&amp;emsp; ambient材质向量定义了在环境光照下这个表面反射的是什么颜色，通常与表面的颜色相同。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-cai-zhi.html</guid><pubDate>Sat, 04 Jan 2025 05:50:27 +0000</pubDate></item><item><title>【OpenGL】着色器及数据</title><link>https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-zhao-se-qi-ji-shu-ju.html</link><description>&gt; 术语：&#13;
 &gt; 顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换&#13;
 &gt; 顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组&#13;
 &gt; 元素缓冲对象：Element Buffer Object，EBO 或 索引缓冲对象 Index Buffer Object，IBO，保存了要绘制的顶点在数组中的索引&#13;
