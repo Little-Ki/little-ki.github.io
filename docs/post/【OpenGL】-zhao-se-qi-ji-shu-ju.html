@@ -10,173 +10,13 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="> 术语：
-> 顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换
-> 顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组
-> 元素缓冲对象：Element Buffer Object，EBO 或 索引缓冲对象 Index Buffer Object，IBO，保存了要绘制的顶点在数组中的索引
-# API
-```c
-// 生成顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml)
-void glGenVertexArrays(GLsizei n, GLuint *arrays);
-// 绑定顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindVertexArray.xhtml)
-void glBindVertexArray(GLuint array);
-
-// 申请缓冲区 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml)
-void glGenBuffers(GLsizei n, GLuint * buffers);
-// 将缓冲区绑定至目标 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml)
-void glBindBuffer(GLenum target, GLuint buffer);
-
-// 上传数据至缓冲区[参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml)
-void glBufferData(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
-void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void *data, GLenum usage);
-
-// 上传数据至缓冲区（部分）
-// [参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml)
-void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void * data);
-void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data);
-
-// 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)
-GLuint glCreateProgram(void);
-// 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)
-void glAttachShader(GLuint program, GLuint shader);
-// 链接着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glLinkProgram.xhtml)
-void glLinkProgram(GLuint program);
-// 获取着色器程序参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)
-void glGetProgramiv(GLuint program, GLenum pname, GLint *params);
-// 删除着色器程序
-void glDeleteProgram(GLuint program);
-
-// 创建着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml)
-GLuint glCreateShader(GLenum shaderType);
-// 设置着色器代码 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml)
-void glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
-// 编译着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCompileShader.xhtml)
-void glCompileShader(GLuint shader);
-// 获取着色器参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)
-void glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
-// 删除着色器
-void glDeleteShader(GLuint shader);
-
-// 定义通用顶点属性数据的数组
-// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml)
-void glVertexAttribPointer(
-	GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
-void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void * pointer);
-void glVertexAttribLPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void * pointer);
-
-// 使用索引绘制顶点 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml)
-void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void * indices);
-```
-# 顶点数组对象（VAO）
-```c
-unsigned int VAO;
-// 申请一个顶点数组对象
-// 一个数组对象关联了一个VBO / EBO
-// 当在多个不同的VBO / EBO之间切换时，使用此方法
-glGenVertexArrays(1, &VAO);
-// 绑定VAO
-glBindVertexArray(VAO);
-// 之后的操作将在其上进行
-```
-
-# 顶点缓冲对象（VBO）
-```c
-float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f 
-};
-unsigned int VBO;
-// 申请了一个顶点缓冲区
-glGenBuffers(1, &VBO);
-// 绑定至 GL_ARRAY_BUFFER
-glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-// 上传数据 其中第四个参数指定了如何管理数据
-// GL_STATIC_DRAW ：数据不会或几乎不会改变。">
+<meta name="description" content="# 术语：
+> 顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换.
+> 顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组。">
 <meta property="og:title" content="【OpenGL】着色器及数据">
-<meta property="og:description" content="> 术语：
-> 顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换
-> 顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组
-> 元素缓冲对象：Element Buffer Object，EBO 或 索引缓冲对象 Index Buffer Object，IBO，保存了要绘制的顶点在数组中的索引
-# API
-```c
-// 生成顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml)
-void glGenVertexArrays(GLsizei n, GLuint *arrays);
-// 绑定顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindVertexArray.xhtml)
-void glBindVertexArray(GLuint array);
-
-// 申请缓冲区 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml)
-void glGenBuffers(GLsizei n, GLuint * buffers);
-// 将缓冲区绑定至目标 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml)
-void glBindBuffer(GLenum target, GLuint buffer);
-
-// 上传数据至缓冲区[参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml)
-void glBufferData(GLenum target, GLsizeiptr size, const void * data, GLenum usage);
-void glNamedBufferData(GLuint buffer, GLsizeiptr size, const void *data, GLenum usage);
-
-// 上传数据至缓冲区（部分）
-// [参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml)
-void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void * data);
-void glNamedBufferSubData(GLuint buffer, GLintptr offset, GLsizeiptr size, const void *data);
-
-// 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)
-GLuint glCreateProgram(void);
-// 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)
-void glAttachShader(GLuint program, GLuint shader);
-// 链接着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glLinkProgram.xhtml)
-void glLinkProgram(GLuint program);
-// 获取着色器程序参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)
-void glGetProgramiv(GLuint program, GLenum pname, GLint *params);
-// 删除着色器程序
-void glDeleteProgram(GLuint program);
-
-// 创建着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml)
-GLuint glCreateShader(GLenum shaderType);
-// 设置着色器代码 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml)
-void glShaderSource(GLuint shader, GLsizei count, const GLchar **string, const GLint *length);
-// 编译着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCompileShader.xhtml)
-void glCompileShader(GLuint shader);
-// 获取着色器参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)
-void glGetShaderiv(GLuint shader, GLenum pname, GLint *params);
-// 删除着色器
-void glDeleteShader(GLuint shader);
-
-// 定义通用顶点属性数据的数组
-// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml)
-void glVertexAttribPointer(
-	GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void * pointer);
-void glVertexAttribIPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void * pointer);
-void glVertexAttribLPointer(GLuint index, GLint size, GLenum type, GLsizei stride, const void * pointer);
-
-// 使用索引绘制顶点 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml)
-void glDrawElements(GLenum mode, GLsizei count, GLenum type, const void * indices);
-```
-# 顶点数组对象（VAO）
-```c
-unsigned int VAO;
-// 申请一个顶点数组对象
-// 一个数组对象关联了一个VBO / EBO
-// 当在多个不同的VBO / EBO之间切换时，使用此方法
-glGenVertexArrays(1, &VAO);
-// 绑定VAO
-glBindVertexArray(VAO);
-// 之后的操作将在其上进行
-```
-
-# 顶点缓冲对象（VBO）
-```c
-float vertices[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f 
-};
-unsigned int VBO;
-// 申请了一个顶点缓冲区
-glGenBuffers(1, &VBO);
-// 绑定至 GL_ARRAY_BUFFER
-glBindBuffer(GL_ARRAY_BUFFER, VBO);  
-// 上传数据 其中第四个参数指定了如何管理数据
-// GL_STATIC_DRAW ：数据不会或几乎不会改变。">
+<meta property="og:description" content="# 术语：
+> 顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换.
+> 顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-zhao-se-qi-ji-shu-ju.html">
 <meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
@@ -247,12 +87,112 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><blockquote>
-<p>术语：<br>
-顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换<br>
-顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组<br>
-元素缓冲对象：Element Buffer Object，EBO 或 索引缓冲对象 Index Buffer Object，IBO，保存了要绘制的顶点在数组中的索引</p>
+<div class="markdown-body" id="postBody"><h1>术语：</h1>
+<blockquote>
+<p>顶点数组对象：Vertex Array Object，VAO，保存了多个顶点数组对象，用于在多个顶点数组间切换.<br>
+顶点缓冲对象：Vertex Buffer Object，VBO，储存了单个顶点数组。<br>
+元素缓冲对象：Element Buffer Object，EBO 或 索引缓冲对象 Index Buffer Object，IBO，储存了绘制顶点的索引。</p>
 </blockquote>
+<h1>顶点数组对象</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">void</span> <span class="pl-en">glGenVertexArrays</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span><span class="pl-s1">arrays</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glBindVertexArray</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">array</span>);</pre></div>
+<p>  glGenVertexArrays申请一个或多个顶点数组对象，在执行操作之前需要使用glBindVertexArray绑定至某个对象。</p>
+<h1>数据缓冲</h1>
+<h2>申请与绑定</h2>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">void</span> <span class="pl-en">glGenBuffers</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span> <span class="pl-s1">buffers</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glBindBuffer</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">array</span>);</pre></div>
+<p>  glGenBuffers在显存中申请缓冲区，返回缓冲区id。使用glBindBuffer可为缓冲区指定目标，取决于参数target。<br>
+  可用于申请VBO与EBO</p>
+<h2>上传数据</h2>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">void</span> <span class="pl-en">glBufferData</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glNamedBufferData</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span><span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glBufferSubData</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLintptr</span> <span class="pl-s1">offset</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glNamedBufferSubData</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>, <span class="pl-smi">GLintptr</span> <span class="pl-s1">offset</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span><span class="pl-s1">data</span>);</pre></div>
+<p>  在使用glBindBuffer将缓冲区绑定至目标后，可以使用此api上传数据，参数target指定api绑定缓冲区对象的目标。在此之前使用glBindBuffer先将缓冲区绑定至目标。</p>
+<h2>target</h2>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th align="center">值</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">GL_ARRAY_BUFFER</td>
+<td align="center">顶点属性</td>
+</tr>
+<tr>
+<td align="center">GL_ATOMIC_COUNTER_BUFFER</td>
+<td align="center">原子计数器存储</td>
+</tr>
+<tr>
+<td align="center">GL_COPY_READ_BUFFER</td>
+<td align="center">缓冲区复制源</td>
+</tr>
+<tr>
+<td align="center">GL_COPY_WRITE_BUFFER</td>
+<td align="center">缓冲区复制目标</td>
+</tr>
+<tr>
+<td align="center">GL_DISPATCH_INDIRECT_BUFFER</td>
+<td align="center">间接计算调度命令</td>
+</tr>
+<tr>
+<td align="center">GL_DRAW_INDIRECT_BUFFER</td>
+<td align="center">间接命令参数</td>
+</tr>
+<tr>
+<td align="center">GL_ELEMENT_ARRAY_BUFFER</td>
+<td align="center">顶点索引数组</td>
+</tr>
+<tr>
+<td align="center">GL_PIXEL_PACK_BUFFER</td>
+<td align="center">像素读取目标</td>
+</tr>
+<tr>
+<td align="center">GL_PIXEL_UNPACK_BUFFER</td>
+<td align="center">纹理数据源</td>
+</tr>
+<tr>
+<td align="center">GL_QUERY_BUFFER</td>
+<td align="center">查询结果缓冲区</td>
+</tr>
+<tr>
+<td align="center">GL_SHADER_STORAGE_BUFFER</td>
+<td align="center">着色器的读写存储</td>
+</tr>
+<tr>
+<td align="center">GL_TEXTURE_BUFFER</td>
+<td align="center">纹理数据缓冲区</td>
+</tr>
+<tr>
+<td align="center">GL_TRANSFORM_FEEDBACK_BUFFER</td>
+<td align="center">变换反馈缓冲区</td>
+</tr>
+<tr>
+<td align="center">GL_UNIFORM_BUFFER</td>
+<td align="center">Uniform 块存储</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<h1>着色器与程序</h1>
+<h2>程序</h2>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">GLuint</span> <span class="pl-en">glCreateProgram</span>(); <span class="pl-c">// 创建，返回程序id</span>
+<span class="pl-smi">void</span> <span class="pl-en">glAttachShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>); <span class="pl-c">// 将着色器附加到程序</span>
+<span class="pl-smi">void</span> <span class="pl-en">glLinkProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>); <span class="pl-c">// 链接程序</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGetProgramiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>); <span class="pl-c">// 查询程序参数</span>
+<span class="pl-smi">void</span> <span class="pl-en">glDeleteProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>); <span class="pl-c">// 删除重新</span></pre></div>
+<p>  glGetProgramiv创建用于查询程序的状态，其中pname指定了属性名，可选项：GL_DELETE_STATUS，GL_LINK_STATUS，GL_VALIDATE_STATUS，GL_INFO_LOG_LENGTH，GL_ATTACHED_SHADERS，GL_ACTIVE_ATOMIC_COUNTER_BUFFERS，GL_ACTIVE_ATTRIBUTES，GL_ACTIVE_ATTRIBUTE_MAX_LENGTH，GL_ACTIVE_UNIFORMS，GL_ACTIVE_UNIFORM_BLOCKS，GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH，GL_ACTIVE_UNIFORM_MAX_LENGTH，GL_COMPUTE_WORK_GROUP_SIZE，GL_PROGRAM_BINARY_LENGTH，GL_TRANSFORM_FEEDBACK_BUFFER_MODE，GL_TRANSFORM_FEEDBACK_VARYINGS，GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH，GL_GEOMETRY_VERTICES_OUT，GL_GEOMETRY_INPUT_TYPE，和 GL_GEOMETRY_OUTPUT_TYPE。</p>
+<h2>着色器</h2>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">GLuint</span> <span class="pl-en">glCreateShader</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">shaderType</span>); <span class="pl-c">// 创建着色器</span>
+<span class="pl-smi">void</span> <span class="pl-en">glShaderSource</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">count</span>, <span class="pl-k">const</span> <span class="pl-smi">GLchar</span> <span class="pl-c1">*</span><span class="pl-c1">*</span><span class="pl-s1">string</span>, <span class="pl-k">const</span> <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">length</span>); <span class="pl-c">// 上传着色器代码</span>
+<span class="pl-smi">void</span> <span class="pl-en">glCompileShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>); <span class="pl-c">// 编译着色器</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGetShaderiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>); <span class="pl-c">// 查询着色器参数</span>
+<span class="pl-smi">void</span> <span class="pl-en">glDeleteShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>); <span class="pl-c">// 删除着色器</span></pre></div>
+<p>  glCreateShader创建指定类型的着色器，参数可为：GL_COMPUTE_SHADER，GL_VERTEX_SHADER，GL_TESS_CONTROL_SHADER，GL_TESS_EVALUATION_SHADER，GL_GEOMETRY_SHADER，或 GL_FRAGMENT_SHADER。<br>
+  glGetShaderiv创建用于查询着色器的状态，其中pname指定了属性名，可选项：GL_SHADER_TYPE，GL_DELETE_STATUS，GL_COMPILE_STATUS，GL_INFO_LOG_LENGTH，GL_SHADER_SOURCE_LENGTH.</p>
+<h2>日志</h2>
 <h1>API</h1>
 <div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 生成顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml)</span>
 <span class="pl-smi">void</span> <span class="pl-en">glGenVertexArrays</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span><span class="pl-s1">arrays</span>);
