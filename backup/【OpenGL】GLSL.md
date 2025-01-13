@@ -246,8 +246,8 @@ bvec not(bvec x) // bool矢量的逐分量取反
 
 ### 纹理查询函数
 
-> 图像纹理有两种 一种是平面2d纹理,另一种是盒纹理,针对不同的纹理类型有不同访问方法.
-> 纹理查询的最终目的是从sampler中提取指定坐标的颜色信息. 函数中带有Cube字样的是指 需要传入盒状纹理. 带有Proj字样的是指带投影的版本.
+> 图像纹理有两种 一种是平面2d纹理,另一种是盒纹理,针对不同的纹理类型有不同访问方法。
+> 纹理查询的最终目的是从sampler中提取指定坐标的颜色信息。
 ```glsl
 vec4 texture(sampler2D sampler, vec2 coord);
 vec4 texture(samplerCube sampler, vec3 coord);
