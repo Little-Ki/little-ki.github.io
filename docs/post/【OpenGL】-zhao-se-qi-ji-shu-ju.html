@@ -97,12 +97,30 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">void</span> <span class="pl-en">glGenVertexArrays</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span><span class="pl-s1">arrays</span>);
 <span class="pl-smi">void</span> <span class="pl-en">glBindVertexArray</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">array</span>);</pre></div>
 <p>  glGenVertexArrays申请一个或多个顶点数组对象，在执行操作之前需要使用glBindVertexArray绑定至某个对象。</p>
+<h1>顶点属性</h1>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 用于声明属性的属性</span>
+<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribPointer</span>(
+	<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLboolean</span> <span class="pl-s1">normalized</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribIPointer</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribLPointer</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
+
+<span class="pl-c">// 用于启用或停用指定索引的顶点属性</span>
+<span class="pl-smi">void</span> <span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>); 
+<span class="pl-smi">void</span> <span class="pl-en">glDisableVertexAttribArray</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glEnableVertexArrayAttrib</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">vaobj</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>); 
+<span class="pl-smi">void</span> <span class="pl-en">glDisableVertexArrayAttrib</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">vaobj</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>);</pre></div>
+<p>  对于含有多个属性的顶点，使用此方式声明每个属性的属性。<br>
+  其中index为顶点属性的索引，size指定该属性的成员数（1，2，3或4），type指定该属性的的成员的类型。<br>
+  对于type属性，GL_BYTE、 GL_UNSIGNED_BYTE、 GL_SHORT、 GL_UNSIGNED_SHORT、 GL_INT、GL_UNSIGNED_INT可用于函数glVertexAttribPointer和glVertexAttribIPointer，GL_HALF_FLOAT、GL_FLOAT、GL_DOUBLE、GL_FIXED、GL_INT_2_10_10_10_REV、GL_UNSIGNED_INT_2_10_10_10_REV、GL_UNSIGNED_INT_10F_11F_11F_REV可用于glVertexAttribPointer，GL_DOUBLE也可用于该函数且仅可用于该函数。<br>
+  normalized指定是否对属性进行归一化，GL_TRUE或GL_FALSE。<br>
+  stride指定连续通用顶点属性之间的字节偏移量，如果为 0，则通用顶点属性被理解为紧密包装在数组中。初始值为0。<br>
+  pointer指定当前绑定到 GL_ARRAY_BUFFER 目标的缓冲区的数据存储中数组中第一个通用顶点属性的第一个组件的偏移量。</p>
 <h1>数据缓冲</h1>
 <h2>申请与绑定</h2>
 <div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">void</span> <span class="pl-en">glGenBuffers</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span> <span class="pl-s1">buffers</span>);
 <span class="pl-smi">void</span> <span class="pl-en">glBindBuffer</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">array</span>);</pre></div>
 <p>  glGenBuffers在显存中申请缓冲区，返回缓冲区id。使用glBindBuffer可为缓冲区指定目标，取决于参数target。<br>
-  可用于申请VBO与EBO</p>
+  可用于VBO与EBO</p>
 <h2>上传数据</h2>
 <div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">void</span> <span class="pl-en">glBufferData</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
 <span class="pl-smi">void</span> <span class="pl-en">glNamedBufferData</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span><span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
@@ -182,233 +200,18 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <span class="pl-smi">void</span> <span class="pl-en">glAttachShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>); <span class="pl-c">// 将着色器附加到程序</span>
 <span class="pl-smi">void</span> <span class="pl-en">glLinkProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>); <span class="pl-c">// 链接程序</span>
 <span class="pl-smi">void</span> <span class="pl-en">glGetProgramiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>); <span class="pl-c">// 查询程序参数</span>
-<span class="pl-smi">void</span> <span class="pl-en">glDeleteProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>); <span class="pl-c">// 删除重新</span></pre></div>
-<p>  glGetProgramiv创建用于查询程序的状态，其中pname指定了属性名，可选项：GL_DELETE_STATUS，GL_LINK_STATUS，GL_VALIDATE_STATUS，GL_INFO_LOG_LENGTH，GL_ATTACHED_SHADERS，GL_ACTIVE_ATOMIC_COUNTER_BUFFERS，GL_ACTIVE_ATTRIBUTES，GL_ACTIVE_ATTRIBUTE_MAX_LENGTH，GL_ACTIVE_UNIFORMS，GL_ACTIVE_UNIFORM_BLOCKS，GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH，GL_ACTIVE_UNIFORM_MAX_LENGTH，GL_COMPUTE_WORK_GROUP_SIZE，GL_PROGRAM_BINARY_LENGTH，GL_TRANSFORM_FEEDBACK_BUFFER_MODE，GL_TRANSFORM_FEEDBACK_VARYINGS，GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH，GL_GEOMETRY_VERTICES_OUT，GL_GEOMETRY_INPUT_TYPE，和 GL_GEOMETRY_OUTPUT_TYPE。</p>
+<span class="pl-smi">void</span> <span class="pl-en">glDeleteProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>); <span class="pl-c">// 删除重新</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGetProgramInfoLog</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">maxLength</span>, <span class="pl-smi">GLsizei</span> <span class="pl-c1">*</span><span class="pl-s1">length</span>, <span class="pl-smi">GLchar</span> <span class="pl-c1">*</span><span class="pl-s1">infoLog</span>); <span class="pl-c">// 获取日志</span></pre></div>
+<p>  glGetProgramiv创建用于查询程序的状态，其中pname指定了属性名，可选项：GL_DELETE_STATUS、GL_LINK_STATUS、GL_VALIDATE_STATUS、GL_INFO_LOG_LENGTH、GL_ATTACHED_SHADERS、GL_ACTIVE_ATOMIC_COUNTER_BUFFERS、GL_ACTIVE_ATTRIBUTES、GL_ACTIVE_ATTRIBUTE_MAX_LENGTH、GL_ACTIVE_UNIFORMS、GL_ACTIVE_UNIFORM_BLOCKS、GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH、GL_ACTIVE_UNIFORM_MAX_LENGTH、GL_COMPUTE_WORK_GROUP_SIZE、GL_PROGRAM_BINARY_LENGTH、GL_TRANSFORM_FEEDBACK_BUFFER_MODE、GL_TRANSFORM_FEEDBACK_VARYINGS、GL_TRANSFORM_FEEDBACK_VARYING_MAX_LENGTH、GL_GEOMETRY_VERTICES_OUT、GL_GEOMETRY_INPUT_TYPE、GL_GEOMETRY_OUTPUT_TYPE。</p>
 <h2>着色器</h2>
 <div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">GLuint</span> <span class="pl-en">glCreateShader</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">shaderType</span>); <span class="pl-c">// 创建着色器</span>
 <span class="pl-smi">void</span> <span class="pl-en">glShaderSource</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">count</span>, <span class="pl-k">const</span> <span class="pl-smi">GLchar</span> <span class="pl-c1">*</span><span class="pl-c1">*</span><span class="pl-s1">string</span>, <span class="pl-k">const</span> <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">length</span>); <span class="pl-c">// 上传着色器代码</span>
 <span class="pl-smi">void</span> <span class="pl-en">glCompileShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>); <span class="pl-c">// 编译着色器</span>
 <span class="pl-smi">void</span> <span class="pl-en">glGetShaderiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>); <span class="pl-c">// 查询着色器参数</span>
-<span class="pl-smi">void</span> <span class="pl-en">glDeleteShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>); <span class="pl-c">// 删除着色器</span></pre></div>
-<p>  glCreateShader创建指定类型的着色器，参数可为：GL_COMPUTE_SHADER，GL_VERTEX_SHADER，GL_TESS_CONTROL_SHADER，GL_TESS_EVALUATION_SHADER，GL_GEOMETRY_SHADER，或 GL_FRAGMENT_SHADER。<br>
-  glGetShaderiv创建用于查询着色器的状态，其中pname指定了属性名，可选项：GL_SHADER_TYPE，GL_DELETE_STATUS，GL_COMPILE_STATUS，GL_INFO_LOG_LENGTH，GL_SHADER_SOURCE_LENGTH.</p>
-<h2>日志</h2>
-<h1>API</h1>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 生成顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenVertexArrays.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glGenVertexArrays</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span><span class="pl-s1">arrays</span>);
-<span class="pl-c">// 绑定顶点数组对象 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindVertexArray.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glBindVertexArray</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">array</span>);
-
-<span class="pl-c">// 申请缓冲区 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenBuffers.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glGenBuffers</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span> <span class="pl-s1">buffers</span>);
-<span class="pl-c">// 将缓冲区绑定至目标 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindBuffer.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glBindBuffer</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>);
-
-<span class="pl-c">// 上传数据至缓冲区[参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferData.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glBufferData</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
-<span class="pl-smi">void</span> <span class="pl-en">glNamedBufferData</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span><span class="pl-s1">data</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">usage</span>);
-
-<span class="pl-c">// 上传数据至缓冲区（部分）</span>
-<span class="pl-c">// [参考] (https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBufferSubData.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glBufferSubData</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLintptr</span> <span class="pl-s1">offset</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>);
-<span class="pl-smi">void</span> <span class="pl-en">glNamedBufferSubData</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">buffer</span>, <span class="pl-smi">GLintptr</span> <span class="pl-s1">offset</span>, <span class="pl-smi">GLsizeiptr</span> <span class="pl-s1">size</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span><span class="pl-s1">data</span>);
-
-<span class="pl-c">// 创建着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateProgram.xhtml)</span>
-<span class="pl-smi">GLuint</span> <span class="pl-en">glCreateProgram</span>(<span class="pl-smi">void</span>);
-<span class="pl-c">// 将着色器附加到程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glAttachShader.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glAttachShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>);
-<span class="pl-c">// 链接着色器程序 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glLinkProgram.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glLinkProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>);
-<span class="pl-c">// 获取着色器程序参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glGetProgramiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>);
-<span class="pl-c">// 删除着色器程序</span>
-<span class="pl-smi">void</span> <span class="pl-en">glDeleteProgram</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">program</span>);
-
-<span class="pl-c">// 创建着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCreateShader.xhtml)</span>
-<span class="pl-smi">GLuint</span> <span class="pl-en">glCreateShader</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">shaderType</span>);
-<span class="pl-c">// 设置着色器代码 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glShaderSource.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glShaderSource</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">count</span>, <span class="pl-k">const</span> <span class="pl-smi">GLchar</span> <span class="pl-c1">*</span><span class="pl-c1">*</span><span class="pl-s1">string</span>, <span class="pl-k">const</span> <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">length</span>);
-<span class="pl-c">// 编译着色器 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glCompileShader.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glCompileShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>);
-<span class="pl-c">// 获取着色器参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGetProgram.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glGetShaderiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>);
-<span class="pl-c">// 删除着色器</span>
-<span class="pl-smi">void</span> <span class="pl-en">glDeleteShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>);
-
-<span class="pl-c">// 定义通用顶点属性数据的数组</span>
-<span class="pl-c">// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glVertexAttribPointer.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribPointer</span>(
-	<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLboolean</span> <span class="pl-s1">normalized</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
-<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribIPointer</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
-<span class="pl-smi">void</span> <span class="pl-en">glVertexAttribLPointer</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">index</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">size</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">stride</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">pointer</span>);
-
-<span class="pl-c">// 使用索引绘制顶点 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glDrawElements.xhtml)</span>
-<span class="pl-smi">void</span> <span class="pl-en">glDrawElements</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">mode</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">count</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">indices</span>);</pre></div>
-<h1>顶点数组对象（VAO）</h1>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-c1">VAO</span>;
-<span class="pl-c">// 申请一个顶点数组对象</span>
-<span class="pl-c">// 一个数组对象关联了一个VBO / EBO</span>
-<span class="pl-c">// 当在多个不同的VBO / EBO之间切换时，使用此方法</span>
-<span class="pl-en">glGenVertexArrays</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-c1">VAO</span>);
-<span class="pl-c">// 绑定VAO</span>
-<span class="pl-en">glBindVertexArray</span>(<span class="pl-c1">VAO</span>);
-<span class="pl-c">// 之后的操作将在其上进行</span></pre></div>
-<h1>顶点缓冲对象（VBO）</h1>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">float</span> <span class="pl-s1">vertices</span>[] <span class="pl-c1">=</span> {
-    <span class="pl-c1">-0.5f</span>, <span class="pl-c1">-0.5f</span>, <span class="pl-c1">0.0f</span>,
-     <span class="pl-c1">0.5f</span>, <span class="pl-c1">-0.5f</span>, <span class="pl-c1">0.0f</span>,
-     <span class="pl-c1">0.0f</span>,  <span class="pl-c1">0.5f</span>, <span class="pl-c1">0.0f</span> 
-};
-<span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-c1">VBO</span>;
-<span class="pl-c">// 申请了一个顶点缓冲区</span>
-<span class="pl-en">glGenBuffers</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-c1">VBO</span>);
-<span class="pl-c">// 绑定至 GL_ARRAY_BUFFER</span>
-<span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ARRAY_BUFFER</span>, <span class="pl-c1">VBO</span>);  
-<span class="pl-c">// 上传数据 其中第四个参数指定了如何管理数据</span>
-<span class="pl-c">// GL_STATIC_DRAW ：数据不会或几乎不会改变。</span>
-<span class="pl-c">// GL_DYNAMIC_DRAW：数据会被改变很多。</span>
-<span class="pl-c">// GL_STREAM_DRAW ：数据每次绘制时都会改变。</span>
-<span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">vertices</span>), <span class="pl-s1">vertices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);</pre></div>
-<h1>索引缓冲对象（EBO）</h1>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 当顶点数较多，并且有大量三角形共用顶点，需要用此方式来减少数据量</span>
-<span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-c1">EBO</span>;
-<span class="pl-c">// 申请了一个索引缓冲区</span>
-<span class="pl-en">glGenBuffers</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-c1">EBO</span>);
-<span class="pl-c">// 绑定至 GL_ELEMENT_ARRAY_BUFFER</span>
-<span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-c1">EBO</span>);
-<span class="pl-c">// 上传索引数据</span>
-<span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">indices</span>), <span class="pl-s1">indices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);</pre></div>
-<h1>编译着色器</h1>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">const</span> <span class="pl-smi">char</span> <span class="pl-c1">*</span><span class="pl-s1">shaderSource</span><span class="pl-c1">=</span> <span class="pl-s">"......"</span>;
-<span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-s1">shaderId</span>;
-<span class="pl-c">// 参数可以为 GL_COMPUTE_SHADER，GL_VERTEX_SHADER</span>
-<span class="pl-c">// GL_TESS_CONTROL_SHADER，GL_TESS_EVALUATION_SHADER</span>
-<span class="pl-c">// GL_GEOMETRY_SHADER，GL_FRAGMENT_SHADER</span>
-<span class="pl-s1">shaderId</span><span class="pl-c1">=</span> <span class="pl-en">glCreateShader</span>(...);
-<span class="pl-en">glShaderSource</span>(<span class="pl-s1">shaderId</span>, <span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">shaderSource</span>, <span class="pl-c1">NULL</span>);
-<span class="pl-en">glCompileShader</span>(<span class="pl-s1">shaderId</span>);
-...
-<span class="pl-c">// 检查是否编译成功</span>
-<span class="pl-en">glGetShaderiv</span>(<span class="pl-s1">shaderId</span>, <span class="pl-c1">GL_COMPILE_STATUS</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">success</span>);
-<span class="pl-k">if</span>(!<span class="pl-s1">success</span>)
-{
-    <span class="pl-en">glGetShaderInfoLog</span>(<span class="pl-s1">shaderId</span>, <span class="pl-c1">512</span>, <span class="pl-c1">NULL</span>, <span class="pl-s1">infoLog</span>);
-    ...
-}
-
-<span class="pl-c">// 不再使用时</span>
-<span class="pl-en">glDeleteShader</span>(<span class="pl-s1">shadeId</span>);</pre></div>
-<h1>着色器程序</h1>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-s1">programId</span>;
-<span class="pl-s1">programId</span><span class="pl-c1">=</span> <span class="pl-en">glCreateProgram</span>();
-<span class="pl-c">// ... 编译顶点着色器，将其附加到程序</span>
-<span class="pl-en">glAttachShader</span>(<span class="pl-s1">programId</span>, <span class="pl-s1">vertexShader</span>);
-<span class="pl-c">// ... 编译片段着色器，将其附加到程序</span>
-<span class="pl-en">glAttachShader</span>(<span class="pl-s1">programId</span>, <span class="pl-s1">fragmentShader</span>);
-<span class="pl-c">// 链接着色器程序</span>
-<span class="pl-en">glLinkProgram</span>(<span class="pl-s1">programId</span>);
-...
-<span class="pl-c">// 检查是否链接成功</span>
-<span class="pl-en">glGetProgramiv</span>(<span class="pl-s1">programId</span>, <span class="pl-c1">GL_LINK_STATUS</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">success</span>);
-<span class="pl-k">if</span>(!<span class="pl-s1">success</span>) {
-    <span class="pl-en">glGetProgramInfoLog</span>(<span class="pl-s1">programId</span>, <span class="pl-c1">512</span>, <span class="pl-c1">NULL</span>, <span class="pl-s1">infoLog</span>);
-    ...
-}
-
-<span class="pl-c">// 不再使用时</span>
-<span class="pl-en">glDeleteProgram</span>(<span class="pl-s1">programId</span>);</pre></div>
-<h1>链接顶点属性</h1>
-<blockquote>
-<p>着色器需要知道顶点所包含的数据，一个顶点可以包含如坐标、颜色、纹理坐标等多个参数<br>
-需要由用户声明每个参数的属性，告诉OpenGL该如何解析顶点数据</p>
-</blockquote>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 声明了一个顶点参数 位置为 0（对应着色器内的 location），包含 3 个分量，分量属性为float，不启用归一化</span>
-<span class="pl-c">// 大小为 3 * sizeof(float)，相对偏移（在结构体内的偏移）为 0</span>
-<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">0</span>, <span class="pl-c1">3</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-c1">3</span> <span class="pl-c1">*</span> <span class="pl-k">sizeof</span>(<span class="pl-smi">float</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-c1">0</span>);
-<span class="pl-c">// 启用位置 0 的顶点属性</span>
-<span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">0</span>);</pre></div>
-<h1>代码示例</h1>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">struct</span> <span class="pl-smi">Color</span> {
-	<span class="pl-smi">float</span> <span class="pl-c1">r</span>, <span class="pl-c1">g</span>, <span class="pl-c1">b</span>, <span class="pl-c1">a</span>;
-};
-<span class="pl-k">struct</span> <span class="pl-smi">Pos</span> {
-	<span class="pl-smi">float</span> <span class="pl-c1">x</span>, <span class="pl-c1">y</span>, <span class="pl-c1">z</span>;
-};
-<span class="pl-k">struct</span> <span class="pl-smi">TexCoord</span> {
-	<span class="pl-smi">float</span> <span class="pl-c1">u</span>, <span class="pl-c1">v</span>;
-};
-<span class="pl-k">struct</span> <span class="pl-smi">Vert</span> {
-	<span class="pl-smi">Pos</span> <span class="pl-c1">pos</span>;
-	<span class="pl-smi">Color</span> <span class="pl-c1">col</span>;
-	<span class="pl-smi">TexCoord</span> <span class="pl-c1">uv</span>;
-};
-
-<span class="pl-smi">GLuint</span> <span class="pl-s1">vao</span>, <span class="pl-s1">vbo</span>, <span class="pl-s1">ebo</span>, <span class="pl-s1">vs</span>, <span class="pl-s1">fs</span>, <span class="pl-s1">program</span>;
-<span class="pl-s1">Vert</span>[] <span class="pl-s1">vertices</span> <span class="pl-c1">=</span> { ... };
-unsigned <span class="pl-smi">int</span>[] <span class="pl-s1">indices</span> <span class="pl-c1">=</span> { ... };
-<span class="pl-c">// ... 编译顶点着色器与片段着色器</span>
-<span class="pl-c">// ... 创建着色器程序，附加着色器并链接</span>
-<span class="pl-c">// ... 创建VAO，VBO，EBO</span>
-<span class="pl-c">// 绑定VAO</span>
-<span class="pl-en">glBindVertexArray</span>(<span class="pl-c1">VAO</span>);
-<span class="pl-c">// 绑定VBO</span>
-<span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ARRAY_BUFFER</span>, <span class="pl-c1">VBO</span>);
-<span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">vertices</span>), <span class="pl-s1">vertices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);
-<span class="pl-c">// 绑定EBO</span>
-<span class="pl-en">glBindBuffer</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-c1">EBO</span>);
-<span class="pl-en">glBufferData</span>(<span class="pl-c1">GL_ELEMENT_ARRAY_BUFFER</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">indices</span>), <span class="pl-s1">indices</span>, <span class="pl-c1">GL_STATIC_DRAW</span>);
-<span class="pl-c">// 启用第 0 个属性</span>
-<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">0</span>, <span class="pl-c1">3</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">Vert</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-c1">0</span>);
-<span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">0</span>);
-<span class="pl-c">// 启用第 1 个属性</span>
-<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">1</span>, <span class="pl-c1">4</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">Vert</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)<span class="pl-k">sizeof</span>(<span class="pl-s1">Pos</span>));
-<span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">1</span>);
-<span class="pl-c">// 启用第 2 个属性</span>
-<span class="pl-en">glVertexAttribPointer</span>(<span class="pl-c1">2</span>, <span class="pl-c1">2</span>, <span class="pl-c1">GL_FLOAT</span>, <span class="pl-c1">GL_FALSE</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">Vert</span>), (<span class="pl-smi">void</span><span class="pl-c1">*</span>)(<span class="pl-k">sizeof</span>(<span class="pl-s1">Pos</span>) <span class="pl-c1">+</span> <span class="pl-k">sizeof</span>(<span class="pl-s1">Color</span>)));
-<span class="pl-en">glEnableVertexAttribArray</span>(<span class="pl-c1">2</span>);
-...
-<span class="pl-c">// 启用着色器程序</span>
-<span class="pl-en">glUseProgram</span>(<span class="pl-s1">programId</span>);
-<span class="pl-c">// 使用该VAO关联的顶点</span>
-<span class="pl-en">glBindVertexArray</span>(<span class="pl-s1">vao</span>);
-<span class="pl-c">// 使用顶点及其索引绘制三角洲</span>
-<span class="pl-c">// 绘制方式为 GL_TRIANGLES，可以是以下之一 </span>
-<span class="pl-c">// GL_POINTS，GL_LINE_STRIP，GL_LINE_LOOP，GL_LINES，GL_LINE_STRIP_ADJACENCY，</span>
-<span class="pl-c">// GL_LINES_ADJACENCY，GL_TRIANGLE_STRIP，GL_TRIANGLE_FAN，GL_TRIANGLES，</span>
-<span class="pl-c">// GL_TRIANGLE_STRIP_ADJACENCY，GL_TRIANGLES_ADJACENCY、GL_PATCHES</span>
-<span class="pl-c">// 索引数量为, sizeof(indices)</span>
-<span class="pl-c">// 起始偏移为 0</span>
-<span class="pl-c">// 索引数据类型为 unsigned int</span>
-<span class="pl-en">glDrawElements</span>(<span class="pl-c1">GL_TRIANGLES</span>, <span class="pl-k">sizeof</span>(<span class="pl-s1">indices</span>), <span class="pl-c1">GL_UNSIGNED_INT</span>, <span class="pl-c1">0</span>);
-<span class="pl-en">glBindVertexArray</span>(<span class="pl-c1">0</span>);</pre></div>
-<details><summary>着色器参考</summary>
-<div class="highlight highlight-source-glsl"><pre class="notranslate"><span class="pl-k">#version</span> <span class="pl-c1">330</span> core
-<span class="pl-c"><span class="pl-c">//</span> 顶点着色器</span>
-<span class="pl-k">layout</span> (location<span class="pl-k">=</span><span class="pl-c1">0</span>) <span class="pl-k">in</span> <span class="pl-k">vec3</span> aPos;
-<span class="pl-k">layout</span> (location<span class="pl-k">=</span><span class="pl-c1">1</span>) <span class="pl-k">in</span> <span class="pl-k">vec4</span> aColor;
-<span class="pl-k">layout</span> (location<span class="pl-k">=</span><span class="pl-c1">2</span>) <span class="pl-k">in</span> <span class="pl-k">vec2</span> aUV;
-
-<span class="pl-k">out</span> <span class="pl-k">vec2</span> iUV;
-<span class="pl-k">out</span> <span class="pl-k">vec4</span> iColor;
-
-<span class="pl-k">void</span> main()
-{
-    iUV <span class="pl-k">=</span> aUV;
-    iColor <span class="pl-k">=</span> aColor;
-    <span class="pl-c1">gl_Position</span><span class="pl-k">=</span><span class="pl-k">vec4</span>(aPos,<span class="pl-c1">1.0</span>)
-}</pre></div>
-<div class="highlight highlight-source-glsl"><pre class="notranslate"><span class="pl-k">#version</span> <span class="pl-c1">330</span> core
-<span class="pl-c"><span class="pl-c">//</span> 片段着色器</span>
-<span class="pl-k">out</span> <span class="pl-k">vec4</span> fragColor;
-
-<span class="pl-k">in</span> <span class="pl-k">vec2</span> iUV;
-<span class="pl-k">in</span> <span class="pl-k">vec4</span> iColor;
-
-<span class="pl-k">void</span> main()
-{
-    FragColor <span class="pl-k">=</span> iColor;
-}</pre></div>
-</details></div>
+<span class="pl-smi">void</span> <span class="pl-en">glDeleteShader</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>); <span class="pl-c">// 删除着色器</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGetShaderInfoLog</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">shader</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">maxLength</span>, <span class="pl-smi">GLsizei</span> <span class="pl-c1">*</span><span class="pl-s1">length</span>, <span class="pl-smi">GLchar</span> <span class="pl-c1">*</span><span class="pl-s1">infoLog</span>); <span class="pl-c">// 获取日志</span></pre></div>
+<p>  glCreateShader创建指定类型的着色器，参数可为：GL_COMPUTE_SHADER、GL_VERTEX_SHADER、GL_TESS_CONTROL_SHADER、GL_TESS_EVALUATION_SHADER、GL_GEOMETRY_SHADER、GL_FRAGMENT_SHADER。<br>
+  glGetShaderiv创建用于查询着色器的状态，其中pname指定了属性名，可选项：GL_SHADER_TYPE、GL_DELETE_STATUS、GL_COMPILE_STATUS、GL_INFO_LOG_LENGTH、GL_SHADER_SOURCE_LENGTH。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
