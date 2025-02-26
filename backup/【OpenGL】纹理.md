@@ -7,7 +7,7 @@
 void glGenTextures(GLsizei n, GLuint * textures);
 
 // 绑定纹理 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindTexture.xhtml)
-void glGenTextures(GLenum target, GLuint textures);
+void glBindTexture(GLenum target, GLuint texture);
 
 // 上传纹理数据
 // [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage1D.xhtml)
