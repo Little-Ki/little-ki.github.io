@@ -10,11 +10,15 @@
         let theme = localStorage.getItem("meek_theme") || "light";
         document.documentElement.setAttribute("data-color-mode", theme);
     </script>
-<meta name="description" content="# 1、后缀数组
-对于字符串 $`S`$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序）$`\Sigma`$。">
+<meta name="description" content="原文：[ScriptLZ](https://www.uni-ulm.de/fileadmin/website_uni_ulm/iui.inst.190/Lehre/SS14/Datenkompression/ScriptLZ.pdf)
+
+# 1、后缀数组
+对于字符串 $`S`$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字母表 $`\Sigma`$ 决定的。">
 <meta property="og:title" content="【编码】Lempel-Ziv 分解：无滑动窗LZ77">
-<meta property="og:description" content="# 1、后缀数组
-对于字符串 $`S`$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序）$`\Sigma`$。">
+<meta property="og:description" content="原文：[ScriptLZ](https://www.uni-ulm.de/fileadmin/website_uni_ulm/iui.inst.190/Lehre/SS14/Datenkompression/ScriptLZ.pdf)
+
+# 1、后缀数组
+对于字符串 $`S`$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字母表 $`\Sigma`$ 决定的。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90-bian-ma-%E3%80%91Lempel-Ziv%20-fen-jie-%EF%BC%9A-wu-hua-dong-chuang-LZ77.html">
 <meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
@@ -75,8 +79,13 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 </div>
 </div>
     <div id="content">
-<div class="markdown-body" id="postBody"><h1>1、后缀数组</h1>
-<p>对于字符串 $S$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序）$\Sigma$</p></div>
+<div class="markdown-body" id="postBody"><p>原文：<a href="https://www.uni-ulm.de/fileadmin/website_uni_ulm/iui.inst.190/Lehre/SS14/Datenkompression/ScriptLZ.pdf" rel="nofollow">ScriptLZ</a></p>
+<h1>1、后缀数组</h1>
+<p>对于字符串 $S$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字母表 $\Sigma$ 决定的。$\Sigma$ 是一个具有固定大小 $\sigma$ 的字母集合，为了方便起见将 $\Sigma$ 视为一个大小为 $\sigma$ 的数组，其中的字符在 $\Sigma[1…\sigma]$ 按照升序排序即 $\Sigma[1] \lt \Sigma[2] \lt … \lt \Sigma[\sigma] $，反过来 $\Sigma$ 的每个符号被映射到数字 $\{1, …, \sigma\}$，最小的被映射到 1，次小的被映射到 2，这样可以将字符用作数组的索引。</p>
+<blockquote>
+<h2>定义 1.1</h2>
+<p>令 $\lt$ 是字母集合 $\Sigma$ 的排序方式，同时也是 $\Sigma_{}^*$ 的排序方式：对于 $s, t \in \Sigma_{}^*$</p>
+</blockquote></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
