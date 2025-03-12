@@ -13,12 +13,12 @@
 <meta name="description" content="原文：[ScriptLZ](https://www.uni-ulm.de/fileadmin/website_uni_ulm/iui.inst.190/Lehre/SS14/Datenkompression/ScriptLZ.pdf)
 
 # 1、后缀数组
-对于字符串 $`S`$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字母表 $`\Sigma`$ 决定的。">
+&emsp;&emsp;对于字符串 $`S`$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字符集 $`\Sigma`$ 决定的。">
 <meta property="og:title" content="【编码】Lempel-Ziv 分解：无滑动窗LZ77">
 <meta property="og:description" content="原文：[ScriptLZ](https://www.uni-ulm.de/fileadmin/website_uni_ulm/iui.inst.190/Lehre/SS14/Datenkompression/ScriptLZ.pdf)
 
 # 1、后缀数组
-对于字符串 $`S`$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字母表 $`\Sigma`$ 决定的。">
+&emsp;&emsp;对于字符串 $`S`$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字符集 $`\Sigma`$ 决定的。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90-bian-ma-%E3%80%91Lempel-Ziv%20-fen-jie-%EF%BC%9A-wu-hua-dong-chuang-LZ77.html">
 <meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
@@ -81,10 +81,81 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     <div id="content">
 <div class="markdown-body" id="postBody"><p>原文：<a href="https://www.uni-ulm.de/fileadmin/website_uni_ulm/iui.inst.190/Lehre/SS14/Datenkompression/ScriptLZ.pdf" rel="nofollow">ScriptLZ</a></p>
 <h1>1、后缀数组</h1>
-<p>对于字符串 $S$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字母表 $\Sigma$ 决定的。$\Sigma$ 是一个具有固定大小 $\sigma$ 的字母集合，为了方便起见将 $\Sigma$ 视为一个大小为 $\sigma$ 的数组，其中的字符在 $\Sigma[1…\sigma]$ 按照升序排序即 $\Sigma[1] \lt \Sigma[2] \lt … \lt \Sigma[\sigma] $，反过来 $\Sigma$ 的每个符号被映射到数字 $\{1, …, \sigma\}$，最小的被映射到 1，次小的被映射到 2，这样可以将字符用作数组的索引。</p>
+<p>  对于字符串 $S$，它的后缀数组是其所有后缀按字典序排序的数组（也称为字母顺序，字典或词汇顺序），此排序方式由字符集 $\Sigma$ 决定的。$\Sigma$ 是一个具有固定大小 $\sigma$ 的集合，为了方便起见将 $\Sigma$ 视为一个大小为 $\sigma$ 的数组，其中的字符在 $\Sigma[1…\sigma]$ 按照升序排序即 $\Sigma[1] \lt \Sigma[2] \lt … \lt \Sigma[\sigma] $，反过来 $\Sigma$ 的每个符号被映射到数字 $\{1, …, \sigma\}$，最小的被映射到 1，次小的被映射到 2，这样可以将字符用作数组的索引。</p>
 <blockquote>
 <h2>定义 1.1</h2>
-<p>令 $\lt$ 是字母集合 $\Sigma$ 的排序方式，同时也是 $\Sigma_{}^*$ 的排序方式：对于 $s, t \in \Sigma_{}^*$</p>
+<p>令 $\lt$ 是字符集 $\Sigma$ 的排序方式，同时也是 $\Sigma_{}^*$ 的排序方式：对于 $s, t \in \Sigma_{}^*$，$s \lt t$ 当且仅当 $s$ 是 $t$ 的前缀，或有字符串 $u, v, w \in \Sigma_{}^*$ 且字符 $a, b \in \Sigma$ 并且 $a \lt b$，则 $s = uav$，$t = ubw$</p>
+</blockquote>
+<p>  为确定两个字符串的字典序，从开始依次比较每一个字符，找到第一个不同的字符并对比，在字符集中靠前的字母所在的字符串在字典序的前面，如果在到达任意一个字符串尾部后没有找到不同的字符，则较短的字符串在字典序的前面。<br>
+  在为了确定同一字符串 $S$ 的两个后缀的字典序的算法中，为避免繁琐地区分“有更多字符”或“没有更多字符”，可以在 $S$ 后附加特殊字符 $（标识符）且假定 $ 在字符集中 $\Sigma$ 中最小，如果 $S$ 中其他地方没有出现 $，并且 $S$ 的两个后缀的字典顺序如上所述确定，则一个后缀没有更多字符可供比较的情况就不会发生。我们稍后会看到，在其他情况下，将特殊符号 $ 附加到字符串也很方便。</p>
+<blockquote>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th align="center">$i$</th>
+<th align="center">SA</th>
+<th align="center">ISA</th>
+<th align="center">$S_{SA[i]}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="center">1</td>
+<td align="center">3</td>
+<td align="center">5</td>
+<td align="center">$aataatg$</td>
+</tr>
+<tr>
+<td align="center">2</td>
+<td align="center">6</td>
+<td align="center">7</td>
+<td align="center">$aatg$</td>
+</tr>
+<tr>
+<td align="center">3</td>
+<td align="center">4</td>
+<td align="center">1</td>
+<td align="center">$ataatg$</td>
+</tr>
+<tr>
+<td align="center">4</td>
+<td align="center">7</td>
+<td align="center">3</td>
+<td align="center">$atg$</td>
+</tr>
+<tr>
+<td align="center">5</td>
+<td align="center">1</td>
+<td align="center">8</td>
+<td align="center">$ctaataatg$</td>
+</tr>
+<tr>
+<td align="center">6</td>
+<td align="center">9</td>
+<td align="center">2</td>
+<td align="center">$g$</td>
+</tr>
+<tr>
+<td align="center">7</td>
+<td align="center">2</td>
+<td align="center">4</td>
+<td align="center">$taataatg$</td>
+</tr>
+<tr>
+<td align="center">8</td>
+<td align="center">5</td>
+<td align="center">9</td>
+<td align="center">$taatg$</td>
+</tr>
+<tr>
+<td align="center">9</td>
+<td align="center">8</td>
+<td align="center">6</td>
+<td align="center">$tg$</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<p><strong>图 1</strong>：字符串 $S = ctaataatg$ 的后缀数组和逆后缀数组</p>
 </blockquote></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
