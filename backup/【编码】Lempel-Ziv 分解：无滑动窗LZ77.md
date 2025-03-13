@@ -74,6 +74,8 @@
 
 > 注：此过程首先确定在字符串 $`k`$ 位置开始的后缀在字典序中的位置，在上述示例中，$`k=4\Rightarrow2`$，然后向前、后分别查找，找到第一个长于该后缀的后缀并分别计算最长公共前缀，然后使用较长的前缀作为LZ因子
 
+> ## 练习 2.2：证明上述方法的正确性
+
 > ## 算法 2：程序 $`LZ\_Factor(k, psv, nsv)`$
 > $`l_{psv}\leftarrow`$|**lcp**$`(S_{psv},S_k)`$|
 > $`l_{nsv}\leftarrow`$|**lcp**$`(S_{nsv},S_k)`$|
@@ -87,3 +89,51 @@
 > **return** $`k`$ + max{$`l`$, 1}
 
 &emsp;&emsp;算法 2 基于值 $`psv`$ 和 $`nsv`$，输出在字符串 $`S`$ 的 $`k`$ 位置的LZ因子。此外，它返回下一个要计算的LZ因子的位置。
+
+> ## 练习 2.3：通过计算 $`|{lcp}(S_{psv},S_{nsv})|`$ 稍微改善算法2
+
+> ## 算法 3：在 $`O(n^2)`$ 时间复杂度中计算LZ分解
+> compute **SA** in $`O(n)`$ time
+> **for** i$`\leftarrow`$1 **to** $`n`$ **do**&emsp;&emsp;/&ast; compute **ISA** in $`O(n)`$ time &ast;/
+> &emsp;**ISA**[**SA**[$`i`$]]$`\leftarrow{i}`$&emsp;&emsp;/&ast; stream **ISA** &ast;/
+> $`k\leftarrow1`$
+> **while** $`k\leq{n}`$ **do**
+> &emsp;$`i\leftarrow`$ISA[$`k`$]
+> &emsp;compute $`psv`$ by an upwards scan of $`SA`$ starting at index $`i`$
+> &emsp;compute $`nsv`$ by an downwards scan of $`SA`$ starting at index $`i`$
+> &emsp;$`k`$ ← **LZ_Factor**$`(k, psv, nsv)`$
+
+&emsp;&emsp;算法 3 计算字符串 $`S`$ 的LZ分解，但由于重复扫描，其最坏时间复杂度为 $`O(n^2)`$，要获得线性时间算法，我们必须能够在恒定时间内计算 $`psv`$ 和 $`nsv`$，使用数组 $`PSV_{lex}`$ 和 $`NSV_{lex}`$ 可以实现。如图 2 所示，为了处理边界情况，我们在后缀数组中加入特殊条目：$`SA[0]=0`$ 且 $`SA[n+1]=0`$。此外，我们定义 $`S_0=\epsilon`$ ，因此 $`S_{SA[0]}`$ 和 $`S_{SA[n+1]}`$ 为空字符串。
+
+> ## 定义 2.4
+> 对于任何 $`i(1\leq{i}\leq{n})`$，定义：
+> $`PSV_{lex}[i]`$ = max{$`j`$: $`0\leq{j}\lt{i}`$ 且 $`SA[j]\lt{SA[i]}`$}
+> $`NSV_{lex}[i]`$ = max{$`j`$: $`i\lt{j}\leq{n+1}`$ 且 $`SA[j]\lt{SA[i]}`$}
+
+> ## 算法 4：给定 $`SA`$，计算 $`PSV_{lex}`$ 和 $`NSV_{lex}`$
+> **for** $i\leftarrow1$ **to** $`n + 1`$ **do**&emsp;&emsp;/&ast; stream **SA** &ast;/
+> &emsp;$`j\leftarrow{i-1}`$
+> &emsp;**while** $`SA[i]\lt{SA[j]}`$ **do**
+> &emsp;&emsp;$`NSV_{lex}[j]\leftarrow{i}`$
+> &emsp;&emsp;$`j\leftarrow{PSV_{lex}[i]}`$
+> &emsp;$`PSV_{lex}[i]\leftarrow{j}`$
+
+&emsp;&emsp;算法 4 在线性时间内计算 $`PSV_{lex}`$ 和  $`NSV_{lex}`$，在每迭代一次 $`i`$ 后以下属性保持正确：
+- 对任何 $`k(1\leq{k}\leq{min\{i,n\}})`$，$`PSV_{lex}[k]`$ 被正确填充
+- 对任何 $`k(1\leq{k}\leq{i-1})`$ 且 $`NSV_{lex}[k]\leq{i}`$，$`NSV_{lex}[k]`$ 被正确填充
+
+> ## 练习 2.5：证明在算法4的循环中上面的两个属性确实是不变的。
+
+> ## 练习 2.6：设计一个替代的线性时间算法，使用堆栈计算两个数组
+
+现在，我们拥有了线性时间LZ分解的所有部分；参见算法5。
+
+> ## 算法 5：在线性时间内计算LZ分解
+> compute $`SA`$, $`ISA`$, $`PSV_{lex}`$, and $`NSV_{lex}`$ in $`O(n)`$ time
+> $`k\leftarrow1`$
+> **while** $`k\leq{n}`$ **do** 
+> &emsp;$`psv\leftarrow{SA[PSV_{lex}[ISA[k]]]}`$
+> &emsp;$`nsv\leftarrow{SA[NSV_{lex}[ISA[k]]]}`$
+> &emsp;$`k\leftarrow{LZ\_Factor}(k,psv,nsv)`$
+
+> ## 练习 2.7： 证明算法 5 在 $`O(n)`$ 时间运行
