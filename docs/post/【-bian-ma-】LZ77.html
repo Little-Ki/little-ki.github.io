@@ -120,7 +120,15 @@ $\lambda$： 匹配失败的字符（下一个字符）。</li>
 </li>
 <li>若 $pos\neq0$，则 <strong>for</strong> $1$ <strong>to</strong> $len$ <strong>do</strong> $S\leftarrow{S[n-pos+1]}$，然后若 $\lambda\neq{end}$ 则 $S\leftarrow{\lambda}$
 </li>
-</ul></div>
+</ul>
+<h2>无滑动窗LZ77</h2>
+<p>  此方法无需使用滑动窗来计算所需元组，此方法的基本过程如下：</p>
+<ol>
+<li>列出字符串 $S$ 的所有后缀（以数字 $k$ 表示从 $k$ 处开始的后缀），称为后缀数组</li>
+<li>按字典序从小到大排列此后缀数组</li>
+<li>要计算字符串 $k$ 处的元组，需要找到第一个字典序小于此后缀且长度大于此后缀的后缀并查找它们的计算公共前缀，然后找到第一个字典序大于此后缀且长度大于此后缀的后缀并计算它们的最长公共前缀，选择两个最长前缀中较长的一个作为参照来计算元组。</li>
+<li>这个算法的思想是：如果一个比当前后缀长但是字典序大于/小于当前后缀的后缀，它的字典序大小越接近当前前缀，则它们的公共前缀越长</li>
+</ol></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
