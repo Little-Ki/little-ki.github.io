@@ -137,3 +137,34 @@
 > &emsp;$`k\leftarrow{LZ\_Factor}(k,psv,nsv)`$
 
 > ## 练习 2.7： 证明算法 5 在 $`O(n)`$ 时间运行
+
+&emsp;&emsp;在算法 5 中可以通过直接计算数组 $`PSV_{text}`$ 和  $`NSV_{text}`$ 脱离逆后缀数组，定义如下：
+```math
+PSV_{text}[k]={SA[PSV_{lex}[ISA[k]]]}
+```
+```math
+NSV_{text}[k]={SA[NSV_{lex}[ISA[k]]]}
+```
+
+>> |k|1|2|3|4|5|6|7|8|9|10|
+>> |:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+>> |$`S_k`$|a|c|a|a|a|c|a|t|a|t|
+>> |$`PSV_{text}[k]`$|0|1|0|3|1|2|5|6|5|6|
+>> |$`NSV_{text}[k]`$|0|0|1|1|2|0|2|0|7|8|
+> **图 3**：字符串 $`S=acaaacatat`$ 的 $`PSV_{text}`$ 和 $`NSV_{text}`$ 数组
+
+> ## 算法 6：给出 $`SA`$，计算 $`PSV_{text}`$ 和 $`NSV_{text}`$
+> **for** $`i\leftarrow1`$ **to** $`n+1`$ **do**&emsp;&emsp;/&ast; stream **SA** &ast;/
+> &emsp;$`j\leftarrow{SA[i-1]}`$
+> &emsp;$`k\leftarrow{SA[i]}`$
+> &emsp;**while** $`k\lt{j}`$ **do**&emsp;&emsp;/&ast; store $`PSV_{text}`$ and $`NSV_{text}`$ interleaved &ast;/
+> &emsp;&emsp;$`NSV_{text}[j]\leftarrow{k}`$
+> &emsp;&emsp;$`j\leftarrow{PSV_{text}[j]}`$
+> &emsp;$`NSV_{text}[k]\leftarrow{j}`$
+
+
+> ## 算法 7：在 $`O(n)`$ 时间内计算LZ分解
+> compute **SA**, $`PSV_{text}`$, and $`NSV_{text}`$
+> $`k\leftarrow1`$
+> **while** $`k\leq{n}`$ **do**&emsp;&emsp;/&ast; stream $`PSV_{text}`$ and $`NSV_{text}`$ &ast;/
+> &emsp;$`k\leftarrow{LZ\_Factor(k, PSV_{text}[k], NSV_{text}[k])}`$
