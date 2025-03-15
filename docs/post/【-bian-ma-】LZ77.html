@@ -89,7 +89,7 @@ $w_i$ 是 $\{w_1,\ldots,w_i\}$ 中出现至少两次的最长子串</li>
 <p>  $w_i$ 被称为因子或短语<br>
   $S[i\ldots{j}]$ 表示位置 $i$ 到 $j$ 的子串，$S[i]$ 是 $i$ 处的字符</p>
 <h2>算法</h2>
-<p>  计算 LZ77 压缩的算法核心思想是将已处理的字符串用作字典。<br>
+<p>  计算 LZ77 压缩的算法核心思想是将已处理的字符串用作字典。为了限制搜索时间，实际应用中通常限制字典的大小，因此通常使用滑动窗口（sliding window）。滑动窗口被分割为字典区和预览缓冲区。压缩过程中，字符逐步从预览缓冲区移动到字典中。实际应用中，字典缓冲区通常包含数千个字符，而预览缓冲区则包含约100个字符或更少。<br>
   算法输出由三元组组成，可以用来恢复原始文本。对于因子 $w_i$ 的三元组形式为 $(pos,len,\lambda)$：</p>
 <ul>
 <li>
@@ -100,7 +100,7 @@ $len$：先前出现的长度（若为新字符则为0）</li>
 $\lambda$： 匹配失败的字符（下一个字符）。</li>
 </ul>
 <h2>压缩算法</h2>
-<p>  以字符串 $aacaacabcabaaac$ 为例说明 LZ77 压缩的计算过程算法输出的三元组包括：</p>
+<p>  以字符串 $aacaacabcabaaac$ 为例说明 LZ77 压缩的计算过程，算法采用字典长度为12（紫色区域）和预览缓冲区（黄色区域）长度为10的滑动窗口模型。算法输出的三元组包括：</p>
 <ul>
 <li>(0, 0, a)</li>
 <li>(1, 1, c)</li>
@@ -109,10 +109,7 @@ $\lambda$： 匹配失败的字符（下一个字符）。</li>
 <li>(12, 3, end)</li>
 </ul>
 <p>  以下是算法过程演示：</p>
-<blockquote>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/7360aaaf-75d3-4682-a3e7-6e790270812e"><img src="https://github.com/user-attachments/assets/7360aaaf-75d3-4682-a3e7-6e790270812e" alt="lz77" style="max-width: 100%;"></a></p>
-</blockquote>
-<p>  为了限制搜索时间，实际应用中通常限制字典的大小，因此通常使用滑动窗口（sliding window）。滑动窗口被分割为字典区和预览缓冲区。压缩过程中，字符逐步从预览缓冲区移动到字典中。在搜索时，匹配处于字典区内和预览缓冲区内的最长公共子串。实际应用中，字典缓冲区通常包含数千个字符，而预览缓冲区则包含约100个字符或更少。</p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/06c43b1a-29da-49e5-9c5b-eb003e88a323"><img src="https://github.com/user-attachments/assets/06c43b1a-29da-49e5-9c5b-eb003e88a323" alt="lz77" style="max-width: 100%;"></a></p>
 <h2>解压算法</h2>
 <p>  解压算法相较于压缩算法更加简单，其运行时间为 $O(n)$，对当前长度为 $n$ 字符串 $S$，迭代元组序列且对于任意元组 $(pos,len,\lambda)$：</p>
 <ul>
