@@ -88,7 +88,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <div class="markdown-body" id="postBody"><h1>简述</h1>
 <p>这是一种模拟粒子移动以及粒子交互的方式，在游戏 Noita 中使用了此方式来模拟沙子及其它粒子，在<a href="https://sandboxels.r74n.com/" rel="nofollow">这儿</a>可以找到在线示例。</p>
 <h1>开始</h1>
-<p>此模拟方式的本质是一个元胞自动机，每个粒子按照特定规则更新。</p>
+<p>此模拟方式的本质是一个<a href="https://en.wikipedia.org/wiki/Cellular_automaton" rel="nofollow">元胞自动机</a>，每个粒子按照特定规则更新。</p>
 <p>在此示例中，演示了在 2D 空间中的模拟情况。在此将世界视为一个二维网格，每个网格都可以包含一个粒子，可以使用二维矩阵来表示它。</p>
 <p>可以使用如下结构体来表示粒子：</p>
 <div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">struct</span> <span class="pl-smi">Particle</span> {
