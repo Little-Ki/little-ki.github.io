@@ -93,7 +93,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h1>Edge函数</h1>
 <p>  此函数只是将两个向量叉乘，笛卡尔坐标向量叉积定义为 $a \times b = \lvert{a} \rvert \lvert{b} \rvert \sin{\theta}$，其中 $\theta$ 是向量间的夹角，由于向量叉乘不满足交换律且结果是有符号，可用于判断一点在向量的左侧或右侧（从向量指向的方向观察），可用于在二维中判断一点是在三角形上还是在三角形外。同时向量叉乘的结果还是向量构成的平行四边形的有符号面积。</p>
 <blockquote>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/919bba36-c2da-4a70-88c2-28ac325ad035"><img src="https://github.com/user-attachments/assets/919bba36-c2da-4a70-88c2-28ac325ad035" alt="rasterization" style="max-width: 100%;"></a><br>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/919bba36-c2da-4a70-88c2-28ac325ad035"><img src="https://github.com/user-attachments/assets/919bba36-c2da-4a70-88c2-28ac325ad035" alt="rasterization" style="max-width: 100%; height: auto;"></a><br>
 <strong>图 1</strong>：白色区域内包含的点全部位于三角形所有三个边的右侧。</p>
 </blockquote>
 <h1>重心坐标</h1>
@@ -105,7 +105,7 @@ $$Z_p = \frac{1}{\frac{\lambda_0}{Z_0} + \frac{\lambda_1}{Z_1} + \frac{\lambda_2
 $$C_p = Z_p \times \left(\frac{\lambda_0 \times C_0}{Z_0} + \frac{\lambda_1 \times C_1}{Z_1} + \frac{\lambda_2 \times C_2}{Z_2} \right)$$
 <p>  三角形顶点 $V_i$ 关于三角形上点 $P$ 的权重 $B_i$ 是 $P$ 点与 $V_i$ 所在角对边构成的子三角形的有符号面积与大三角形面积之比。</p>
 <blockquote>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/101256b7-4de4-4252-8a48-0b11eab1d239"><img src="https://github.com/user-attachments/assets/101256b7-4de4-4252-8a48-0b11eab1d239" alt="barycentric" style="max-width: 100%;"></a><br>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/101256b7-4de4-4252-8a48-0b11eab1d239"><img src="https://github.com/user-attachments/assets/101256b7-4de4-4252-8a48-0b11eab1d239" alt="barycentric" style="max-width: 100%; height: auto;"></a><br>
 <strong>图 2</strong>：重心坐标</p>
 </blockquote>
 <h1>左上规则</h1>
@@ -140,7 +140,7 @@ $$\begin{align*}
 \end{align*}$$
 <p>  由于 $x$、$y$ 坐标在屏幕空间中被映射到 $[-1,1]$，而将视场为 90° 的对称视口内的坐标归一化总是落在此范围内，乘以此值相当于将当前视口内顶点的 $x$、$y$ 变换到视场角为 90° 的视口内。</p>
 <blockquote>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/09b1fd6b-c223-4091-9559-281b89eea6fe"><img src="https://github.com/user-attachments/assets/09b1fd6b-c223-4091-9559-281b89eea6fe" alt="remap_point" style="max-width: 100%;"></a><br>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/09b1fd6b-c223-4091-9559-281b89eea6fe"><img src="https://github.com/user-attachments/assets/09b1fd6b-c223-4091-9559-281b89eea6fe" alt="remap_point" style="max-width: 100%; height: auto;"></a><br>
 <strong>图 2</strong>：$\theta = 45°$，$P'.y = \frac{P.y}{\tan{\delta}}$</p>
 </blockquote>
 <p><strong>投影 z：</strong><br>

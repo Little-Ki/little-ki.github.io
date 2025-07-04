@@ -93,25 +93,25 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <h1>频率、振幅和采样率</h1>
 <p>在使用C代码前先看一些基础信息。<br>
 在此实例中，可以看到<strong>周期信号</strong>，是一种在每个时长 $T$ 重复的信号，您可能以前看过这样的图像：</p>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/cba1e76f-f76b-4e62-9e00-814afc8922aa"><img src="https://github.com/user-attachments/assets/cba1e76f-f76b-4e62-9e00-814afc8922aa" alt="Image" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/cba1e76f-f76b-4e62-9e00-814afc8922aa"><img src="https://github.com/user-attachments/assets/cba1e76f-f76b-4e62-9e00-814afc8922aa" alt="Image" style="max-width: 100%; height: auto;"></a></p>
 <blockquote>
 <p>音符 <strong>A4</strong> (440hz) 的<strong>正弦</strong>函数，一条起伏的曲线，用于表示声波。</p>
 </blockquote>
 <p>解释：<br>
 周期信号的每次重复称为一次<strong>循环</strong>，<strong>频率</strong>（Hz）是信号完成周期的速率（即其振荡的频率），如果每秒有100个循环，则频率为100Hz。<br>
 我们感知到的音符是具有特定频率的声音，在上面的示例中，音符 <strong>A4</strong> 是震荡周期为每秒 440 次的声音，每秒震荡 880 次的声音 <strong>A5</strong> 具有相同的音符 <strong>A</strong> 但高 8 度。</p>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/cfc1e1c0-fedf-42aa-b8a9-febfcc38349a"><img src="https://github.com/user-attachments/assets/cfc1e1c0-fedf-42aa-b8a9-febfcc38349a" alt="Image" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/cfc1e1c0-fedf-42aa-b8a9-febfcc38349a"><img src="https://github.com/user-attachments/assets/cfc1e1c0-fedf-42aa-b8a9-febfcc38349a" alt="Image" style="max-width: 100%; height: auto;"></a></p>
 <blockquote>
 <p>上表显示了每个音符的频率值。将我们的正弦波频率从 440 更改为 523.3 将从 <strong>A4</strong> 更改为 <strong>C5</strong>。</p>
 </blockquote>
 <p><strong>振幅</strong> 是波的高度，波峰与波谷的差值，是声音的响度，下面也是音符 <strong>A4</strong> 但具有更小的幅度：</p>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6f6a0185-53a6-48de-a127-4a7fd1e81940"><img src="https://github.com/user-attachments/assets/6f6a0185-53a6-48de-a127-4a7fd1e81940" alt="Image" style="max-width: 100%;"></a></p>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6f6a0185-53a6-48de-a127-4a7fd1e81940"><img src="https://github.com/user-attachments/assets/6f6a0185-53a6-48de-a127-4a7fd1e81940" alt="Image" style="max-width: 100%; height: auto;"></a></p>
 <blockquote>
 <p>播放此波形会产生与上面相同但更小的声音。</p>
 </blockquote>
 <p>要编码 <strong>A4</strong> 的正弦波，需要在此波形上采样并送至声卡。正弦函数理论上有无穷多个点，在计算机上只能采样离散数据。<strong>采样率</strong> 是每秒采样数量，更多的采样具有更高的保真度。</p>
 <p>缩放查看 2 至 3 毫秒之间的图像，显示了采样率为 44100 时的采样情况：<br>
-<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/951d5d2a-1904-4eeb-b5b5-f71e68a66462"><img src="https://github.com/user-attachments/assets/951d5d2a-1904-4eeb-b5b5-f71e68a66462" alt="Image" style="max-width: 100%;"></a></p>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/951d5d2a-1904-4eeb-b5b5-f71e68a66462"><img src="https://github.com/user-attachments/assets/951d5d2a-1904-4eeb-b5b5-f71e68a66462" alt="Image" style="max-width: 100%; height: auto;"></a></p>
 <blockquote>
 <p>使用高采样率以避免折叠频率，当声音频率过高时，低采样率可能导致两个采样之间具有多个周期，此时无法将高频与较高的音高对应区分开。NYQUIST定理指出，需要至少需要 2 倍于最高频率的采样率来控制此问题。使用44100Hz，可以涵盖人耳可以听到的最高频率。</p>
 </blockquote>
