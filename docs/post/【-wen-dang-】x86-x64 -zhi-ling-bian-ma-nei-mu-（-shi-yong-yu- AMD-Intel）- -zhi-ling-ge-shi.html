@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html data-color-mode="light" data-dark-theme="dark" data-light-theme="light" lang="zh-CN">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href='https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/Primer/21.0.7/primer.css' rel='stylesheet' />
+    <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekVercount.js'></script>
+    <link rel="icon" href="https://github.githubassets.com/favicons/favicon.svg"><script>
+        let theme = localStorage.getItem("meek_theme") || "light";
+        document.documentElement.setAttribute("data-color-mode", theme);
+    </script>
+<meta name="description" content="在序言里的例子稍作修改：
+
+```asm
+mov dword ptr es:[eax + ecx * 8 + 0x11223344], 0x12345678
+```
+
+将 word ptr 指示字改回 **dword ptr**，这是个具有典型指令编码意义的指令。">
+<meta property="og:title" content="【文档】x86/x64 指令编码内幕（适用于 AMD/Intel）- 指令格式">
+<meta property="og:description" content="在序言里的例子稍作修改：
+
+```asm
+mov dword ptr es:[eax + ecx * 8 + 0x11223344], 0x12345678
+```
+
+将 word ptr 指示字改回 **dword ptr**，这是个具有典型指令编码意义的指令。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91x86-x64%20-zhi-ling-bian-ma-nei-mu-%EF%BC%88-shi-yong-yu-%20AMD-Intel%EF%BC%89-%20-zhi-ling-ge-shi.html">
+<meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
+<title>【文档】x86/x64 指令编码内幕（适用于 AMD/Intel）- 指令格式</title>
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
+
+</head>
+<style>
+body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;padding: 45px;font-size: 16px;font-family: sans-serif;line-height: 1.25;}
+#header{display:flex;padding-bottom:8px;border-bottom: 1px solid var(--borderColor-muted, var(--color-border-muted));margin-bottom: 16px;}
+#footer {margin-top:64px; text-align: center;font-size: small;}
+
+</style>
+
+<style>
+.postTitle{margin: auto 0;font-size:40px;font-weight:bold;}
+.title-right{display:flex;margin:auto 0 0 auto;}
+.title-right .circle{padding: 14px 16px;margin-right:8px;}
+#postBody{border-bottom: 1px solid var(--color-border-default);padding-bottom:36px;}
+#postBody hr{height:2px;}
+#cmButton{height:48px;margin-top:48px;}
+#comments{margin-top:64px;}
+.g-emoji{font-size:24px;}
+@media (max-width: 600px) {
+    body {padding: 8px;}
+    .postTitle{font-size:24px;}
+}
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+</style>
+
+
+
+
+<body>
+    <div id="header">
+<h1 class="postTitle">【文档】x86/x64 指令编码内幕（适用于 AMD/Intel）- 指令格式</h1>
+<div class="title-right">
+    <a href="https://little-ki.github.io" id="buttonHome" class="btn btn-invisible circle" title="首页">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathHome" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+    <a href="https://github.com/Little-Ki/little-ki.github.io/issues/25" target="_blank" class="btn btn-invisible circle" title="Issue">
+        <svg class="octicon" width="16" height="16">
+            <path id="pathIssue" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+    
+
+    <a class="btn btn-invisible circle" onclick="modeSwitch();" title="切换主题">
+        <svg class="octicon" width="16" height="16" >
+            <path id="themeSwitch" fill-rule="evenodd"></path>
+        </svg>
+    </a>
+
+</div>
+</div>
+    <div id="content">
+<div class="markdown-body" id="postBody"><p>在序言里的例子稍作修改：</p>
+<div class="highlight highlight-source-assembly"><pre class="notranslate"><span class="pl-k">mov</span><span class="pl-en"> dword ptr </span><span class="pl-v">es</span><span class="pl-en">:</span><span class="pl-s1">[</span><span class="pl-v">eax</span><span class="pl-en"> </span><span class="pl-s1">+</span><span class="pl-en"> </span><span class="pl-v">ecx</span><span class="pl-en"> </span><span class="pl-s1">*</span><span class="pl-en"> </span><span class="pl-c1">8</span><span class="pl-en"> </span><span class="pl-s1">+</span><span class="pl-en"> </span><span class="pl-c1">0x11223344</span><span class="pl-s1">],</span><span class="pl-en"> </span><span class="pl-c1">0x12345678</span></pre></div>
+<p>将 word ptr 指示字改回 <strong>dword ptr</strong>，这是个具有典型指令编码意义的指令。</p>
+<p>它的 encodes（机器编码）是：<strong>26 c7 84 c8 44 33 22 11 78 56 34 12</strong> (共12个字节)。</p>
+<h1>1. 编码序列</h1>
+<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/6d32e43f-b797-4ad9-97b0-cf816f3af8b2"><img src="https://github.com/user-attachments/assets/6d32e43f-b797-4ad9-97b0-cf816f3af8b2" alt="format" style="max-width: 100%;"></a></p>
+<p>如上图所示：这是 x86/x64 体系的 General-Pupose Instruction（通用体系指令）的编码格式，记住这个编码序列很重要，这是解析指令编码的基石。</p>
+<p>这个编码序列分为：</p>
+<ol>
+<li>Legacy Prefix</li>
+<li>REX prefix</li>
+<li>Opcode</li>
+<li>ModRM</li>
+<li>SIB</li>
+<li>Displacement</li>
+<li>Immediate</li>
+</ol>
+<p>按功能组别，我将这个指令序列分为 4 个部分：</p>
+<ul>
+<li>Prefix</li>
+<li>Opcode</li>
+<li>ModRM 与 SIB</li>
+<li>Displacement 与 Immediate</li>
+</ul>
+<p>其中，只有 opcode 是必须的，其它组成部分都可选！</p>
+<h2>1.1 Prefix(前缀)</h2>
+<p>AMD推出 x86 扩展 64 位技术时，增加了一个用于访问扩展的 64 位数据 prefix，它是：</p>
+<ul>
+<li>REX prefix</li>
+</ul>
+<p>而 x86 原有的 prefix 则变为了指令格式中的：</p>
+<ul>
+<li>Legacy prefix</li>
+</ul>
+<p>REX prefix 仅存在于 x64 的 64-bit 模式中，在 legacy x86 模式下，REX prefix 是无效的，但是在 x64 的 64-bit 模式下 Legacy prefix 是有效的。<br>
+REX prefix 的取值范围是：</p>
+<ul>
+<li>40H - 4FH</li>
+</ul>
+<p>在非 64 位模式下，它们是 inc 与 dec 指令，也就是说这些指令在 64 位模式下被重定义为 REX prefix</p>
+<h2>1.2 Opcode（操作码）</h2>
+<p>大多数通用指令的 Opcode 是单字节，最多是 2 字节。但是对 x87 FPU 指令和 SSEx 等 SMID 指令来说可以有 3 个字节的，Opcode 码代表着指令是做什么操作。</p>
+<p>一些 Opcode 并不是完整的 Opcode 码，它需要 ModRM 字节进行辅助，这类型的 Opcode 被分成以 Group（组）为单位的一组 Opcode，同一组的 Opcode 有着相同的 operand 属性。</p>
+<p>1.3 ModRM 与 SIB</p>
+<p>ModRM 字节为指令<strong>提供 operand 的寻址</strong>。从某个角度看可以认为是 operand 的属性！包括：</p>
+<ul>
+<li>operand 类型</li>
+<li>operand size</li>
+</ul>
+<p>某些 Opcode 还需要 ModRM 字节进行辅助，ModRM 的结构分为三部分：</p>
+<ul>
+<li>ModRM [7:6] - Mod 部分</li>
+<li>ModRM [5:3] - Reg 部分</li>
+<li>ModRM [2:0] - R/M 部分</li>
+</ul>
+<p>ModRM.mod 提供 operand 的寻址模式，可以从 memory 或 register 中进行选择，ModRM.reg 提供具体 register 的 ID 值，ModRM.r/m 可以选择 Register/Memory 寻址由 ModRM.mod 决定。 也就是：提供 register 的 ID 值，或者内存寻址中的 base 寄存器的 ID 值！</p>
+<p>SIB 提供 memory 操作数中的 base 寄存器，index 寄存器以及 scale 值，同样分为三部分：</p>
+<ul>
+<li>SIB [7:6] - Scale 值</li>
+<li>SIB [5:3] - Index 寄存器 ID</li>
+<li>SIB [2:0] - Base 寄存器 ID</li>
+</ul>
+<p>这两个字节都是用来提供指令操作数，实现操作数的寻址。</p>
+<h2>1.4 Displacment 与 Immediate</h2>
+<p>displacement 与 immediate 直接嵌在指令编码序列里。 displacement 需要 ModRM 甚至 SIB 提供寻址，而 immediate 则在 Opcode 里提供寻址。</p>
+<p>从严格意义来说：D<strong>isplacement 必须由 ModRM 字节提供寻址，它最大为 4 个字节</strong>。然而在 64 位模式下，某些 MOV 指令支持 64 位 offset 值，可是这个 64 位的 offset 值严格来说它并不是 displacment，我们可以认为它是一个 immediate 值。</p>
+<p>immediate 最大可为 8 个字节，<strong>在 x64 的 64 位下的某些情况才会有的</strong></p>
+<pre class="notranslate"><code class="notranslate">注意：displacement 和 immediate 的两种情况：signed 与 **unsigned
+</code></pre>
+<h3>★ 符号数（signed）</h3>
+<p>在下面的情况下，它们是符号：</p>
+<ul>
+<li>进行运算时，它们是符号数</li>
+<li>operand size 扩展时，它们是符号数</li>
+</ul>
+<blockquote>
+<p>实际上：operand size 具有 z 或 b 属性的指令，才可能进行 sign-extended（符号扩展）行为。</p>
+<ol>
+<li>当指令的 operand size 是 z 属性时，如果 immediate 是小于 effective operand size 的，immediate 会进行 sign-extended 行为。</li>
+<li>同样 operand size 是 b 属性的，如果  immediate 是小于 effective operand size 的，immediate 也会进行 sign-extended 行为。</li>
+<li>当指令的 displacement size 小于 address size  的，displacement 会进行 sign-extended 行为。</li>
+</ol>
+</blockquote>
+<p>有关指令的属性，详见 operand type 表 以及 operand size 表</p>
+<p>有关 effective operand size 方面，详见  default（缺省）与 effective（有效）</p>
+<h3>★ 无符号数（unsigned）</h3>
+<p>在这种情况下，displacement 是一个绝对地址值，immediate 是一个无符号立即数值。</p>
+<ul>
+<li>mov eax, dword ptr [0x11223344]</li>
+<li>mov eax, 0x12345678</li>
+</ul>
+<p>上面例子中的 displacement 和 immediate 是 unsigned 数</p>
+<blockquote>
+<p>本质上：所有 displacement 都是 signed（符号数），displacement 是基于 base 地址的一个 offset（偏移量）。<br>
+★ 当地址形式中无 base 寄存器时，虽然它是绝对值形式，实际上它仍是基于 segment base 地址。</p>
+</blockquote>
+<p>因此，只有 immediate 才具有的 unsigned 的时候。</p>
+<h1>2. 指令长度</h1>
+<p>上图中显示，指令长度最长是 15 个字节，在什么时候达到饱和的 15 个字节呢？</p>
+<p>答案是如下类似指令：</p>
+<div class="highlight highlight-source-assembly"><pre class="notranslate"><span class="pl-k">lock</span><span class="pl-en"> </span><span class="pl-k">add</span><span class="pl-en"> dword ptr </span><span class="pl-v">es</span><span class="pl-en">:</span><span class="pl-s1">[</span><span class="pl-v">eax</span><span class="pl-s1">+</span><span class="pl-v">ecx</span><span class="pl-s1">*</span><span class="pl-c1">8</span><span class="pl-s1">+</span><span class="pl-c1">0x11223344</span><span class="pl-s1">],</span><span class="pl-en"> </span><span class="pl-c1">0x12345678</span></pre></div>
+<p>当在 16 位模式代码下，这条指令将达到饱和的 15 个字节长度</p>
+<p>注意：仅在 16 位下，这条指令的编码是：</p>
+<ul>
+<li><strong>26 66 67 F0 81 84 C8 44 33 22 11 78 56 34 12</strong>（正好 15 个字节)</li>
+</ul>
+<p>这个 encode 的意义是：</p>
+<ul>
+<li><strong>26 66 67 F0</strong>：这 4 个字节是 prefix，这 4 个字节达到了饱和的 prefix 状态。
+<ul>
+<li><strong>26</strong> 是 ES segment register prefix</li>
+<li><strong>66</strong> 是 operand-size override prefix</li>
+<li><strong>67</strong> 是 address-size override prefix</li>
+<li><strong>F0</strong> 是 Lock prefix</li>
+</ul>
+</li>
+<li><strong>81</strong>：Opcode</li>
+<li><strong>84</strong>：ModRM</li>
+<li><strong>C8</strong>：SIB</li>
+<li><strong>44 33 22 11</strong>：displacement</li>
+<li><strong>78 56 34 12</strong>：immediate</li>
+</ul>
+<p>有没有超过 15 个字节的指令编码，答案是：没有。那么在 64 位下呢？答案同样是没有！</p>
+<h2>既然这样，顺便提一提：为什么指令长度最长是 15 字节</h2>
+<p>4 个字节的 prefix 已经达到饱和度了： 1 个字节用来改写 segment selector registers，1 个字节用来改写 Operand effective size，1 个字节用来改写 Address effective size，还有 1 个字节用来 lock 总线。已经无法再增加 prefix 了。</p>
+<p>若是采用 2 个字节的 Opcode 码，则寻址模式上不会有 mem32, imm32 这种操作法。所以还是采用 1 个字节的 Opcode，而得到 4 个字节的立即数。</p>
+<p>ModRM + SIB：2 个字节。</p>
+<p>4 个字节的 displacement 值。</p>
+<p>4 个字节的 immediate 值。</p>
+<p>从理论上来讲：这样每个组成部分都呈饱和状态，加起来总共 15 个字节，而只有采用 mem32, imme32　这种寻址模式可能会达到饱和状态。 在 64 位下，若采用 mem, imme 的寻址模式，这和 32 位是一致的，所以不会超越 15 个字节。</p>
+<p>实际上，processor 将保证实施这一限制，当检测到超过 15 bytes 的指令，<strong>processor 将会抛出 #GP 异常</strong>，终止指令的执行。</p>
+<h1>3. encodes 的字节序</h1>
+<p>x86/x64 指令的 encodes 在内存中是以 little endian 存储的，这主要体现在 displacement 和 immediate 部分。</p>
+<p>在 encode 序列里，legacy prefix 在低端，依次往上，最后的 immediate 部分在最高端。</p>
+<div class="highlight highlight-source-assembly"><pre class="notranslate"><span class="pl-k">mov</span><span class="pl-en"> dword ptr </span><span class="pl-v">es</span><span class="pl-en">:</span><span class="pl-s1">[</span><span class="pl-v">eax</span><span class="pl-en"> </span><span class="pl-s1">+</span><span class="pl-en"> </span><span class="pl-v">ecx</span><span class="pl-en"> </span><span class="pl-s1">*</span><span class="pl-en"> </span><span class="pl-c1">8</span><span class="pl-en"> </span><span class="pl-s1">+</span><span class="pl-en"> </span><span class="pl-c1">0x11223344</span><span class="pl-s1">],</span><span class="pl-en"> </span><span class="pl-c1">0x12345678</span></pre></div>
+<p>指令中的 displacement 是 0x11223344，在内存的 little endian 序列是：44 33 22 11</p>
+<p>immediate 是 0x12345678 在内存的 lttle endian 序列是：78 56 34 12</p>
+<p>关于指令长度的论述，在《解开 x86/x64 指令长度的迷惑》一文</p></div>
+<div style="font-size:small;margin-top:8px;float:right;"></div>
+
+<button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
+<div class="comments" id="comments"></div>
+
+</div>
+    <div id="footer"><div id="footer1">Copyright © <span id="copyrightYear"></span> <a href="https://little-ki.github.io">Little-Ki's blog</a></div>
+<div id="footer2">
+    <span id="runday"></span><span>Powered by <a href="https://meekdai.com/Gmeek.html" target="_blank">Gmeek</a></span>
+</div>
+
+<script>
+var now=new Date();
+document.getElementById("copyrightYear").innerHTML=now.getFullYear();
+
+if(""!=""){
+    var startSite=new Date("");
+    var diff=now.getTime()-startSite.getTime();
+    var diffDay=Math.floor(diff/(1000*60*60*24));
+    document.getElementById("runday").innerHTML="网站运行"+diffDay+"天"+" • ";
+}
+</script></div>
+</body>
+<script>
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var utterancesLoad=0;
+
+let themeSettings={
+    "dark": ["dark","moon","#00f0ff","dark-blue"],
+    "light": ["light","sun","#ff5000","github-light"],
+    "auto": ["auto","sync","","preferred-color-scheme"]
+};
+function changeTheme(mode, icon, color, utheme){
+    document.documentElement.setAttribute("data-color-mode",mode);
+    document.getElementById("themeSwitch").setAttribute("d",value=IconList[icon]);
+    document.getElementById("themeSwitch").parentNode.style.color=color;
+    if(utterancesLoad==1){utterancesTheme(utheme);}
+}
+function modeSwitch(){
+    let currentMode=document.documentElement.getAttribute('data-color-mode');
+    let newMode = currentMode === "light" ? "dark" : currentMode === "dark" ? "auto" : "light";
+    localStorage.setItem("meek_theme", newMode);
+    if(themeSettings[newMode]){
+        changeTheme(...themeSettings[newMode]);
+    }
+}
+function utterancesTheme(theme){
+    const message={type:'set-theme',theme: theme};
+    const iframe=document.getElementsByClassName('utterances-frame')[0];
+    iframe.contentWindow.postMessage(message,'https://utteranc.es');
+}
+if(themeSettings[theme]){changeTheme(...themeSettings[theme]);}
+console.log("\n %c Gmeek last https://github.com/Meekdai/Gmeek \n","padding:5px 0;background:#02d81d;color:#fff");
+</script>
+
+<script>
+document.getElementById("pathHome").setAttribute("d",IconList["home"]);
+document.getElementById("pathIssue").setAttribute("d",IconList["github"]);
+
+
+
+function openComments(){
+    cm=document.getElementById("comments");
+    cmButton=document.getElementById("cmButton");
+    cmButton.innerHTML="loading";
+    span=document.createElement("span");
+    span.setAttribute("class","AnimatedEllipsis");
+    cmButton.appendChild(span);
+
+    script=document.createElement("script");
+    script.setAttribute("src","https://utteranc.es/client.js");
+    script.setAttribute("repo","Little-Ki/little-ki.github.io");
+    script.setAttribute("issue-term","title");
+    
+    if(localStorage.getItem("meek_theme")=="dark"){script.setAttribute("theme","dark-blue");}
+    else if(localStorage.getItem("meek_theme")=="light") {script.setAttribute("theme","github-light");}
+    else{script.setAttribute("theme","preferred-color-scheme");}
+    
+    script.setAttribute("crossorigin","anonymous");
+    script.setAttribute("async","");
+    cm.appendChild(script);
+
+    int=self.setInterval("iFrameLoading()",200);
+}
+
+function iFrameLoading(){
+    var utterances=document.getElementsByClassName('utterances');
+    if(utterances.length==1){
+        if(utterances[0].style.height!=""){
+            utterancesLoad=1;
+            int=window.clearInterval(int);
+            document.getElementById("cmButton").style.display="none";
+            console.log("utterances Load OK");
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
+
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
+
+</script>
+<script src='https://blog.meekdai.com/Gmeek/plugins/GmeekTOC.js'></script><script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
+
+</html>
