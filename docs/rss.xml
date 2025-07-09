@@ -1,47 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Wed, 09 Jul 2025 08:23:27 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【文档】x86/x64 指令编码内幕（适用于 AMD/Intel）- 指令格式</title><link>https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91x86-x64%20-zhi-ling-bian-ma-nei-mu-%EF%BC%88-shi-yong-yu-%20AMD-Intel%EF%BC%89-%20-zhi-ling-ge-shi.html</link><description>在序言里的例子稍作修改：
-
-```asm
-mov dword ptr es:[eax + ecx * 8 + 0x11223344], 0x12345678
-```
-
-将 word ptr 指示字改回 **dword ptr**，这是个具有典型指令编码意义的指令。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91x86-x64%20-zhi-ling-bian-ma-nei-mu-%EF%BC%88-shi-yong-yu-%20AMD-Intel%EF%BC%89-%20-zhi-ling-ge-shi.html</guid><pubDate>Wed, 09 Jul 2025 08:22:54 +0000</pubDate></item><item><title>【文档】x86/x64 指令编码内幕（适用于 AMD/Intel）- 序言</title><link>https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91x86-x64%20-zhi-ling-bian-ma-nei-mu-%EF%BC%88-shi-yong-yu-%20AMD-Intel%EF%BC%89-%20-xu-yan.html</link><description>原文来自：http://www.mouseos.com/x64/index.html 现已失效
-
-# C 的经典入门例子：
-
-```c
-int main() {
-    printf('Hello, World\n'); 
-    return 0;
-}
-```
-
-# 1. 在当前 32 位系统下，有下面汇编语句（Intel 格式）：
-```asm
-mov word ptr es:[eax + ecx * 8 + 0x11223344], 0x12345678
-```
-
-### 注 1: “32位系统下”指的是：指令的 default operand size（默认操作数宽度）为 32 位！（CS.D = 1）
-
-从这条语句，我们可以得出以下信息：
-
-- 这是一条 **mov** 指令
-- first operand（目标操作数）是 **memory**
-- second operand（源操作数）是 **immediate**
-
-对于 memory 操作数，我们还了解到：
-
-- operand size（操作数大小）是 word
-- address size（地址大小）是 32 位
-- memmory 寻址是 **[base + index * 8 + displacement32]**
-
-对于 immediate 操作数，我们了解到：
-
-- 它的值为 0x12345678，因此，我们可以判断它的 operand size 是 Double Word（32位）!
-
-## 显然：
-
-first operand（目标操作数）的 operand size 大小是 word（2个字节），而 second operand（源操作数）却是一个 double word 大小的 0x12345678，在这条指令中存在 operand size 不兼容的情况。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91x86-x64%20-zhi-ling-bian-ma-nei-mu-%EF%BC%88-shi-yong-yu-%20AMD-Intel%EF%BC%89-%20-xu-yan.html</guid><pubDate>Wed, 09 Jul 2025 08:00:24 +0000</pubDate></item><item><title>【算法】流体（沙子）模拟器</title><link>https://little-ki.github.io/post/%E3%80%90-suan-fa-%E3%80%91-liu-ti-%EF%BC%88-sha-zi-%EF%BC%89-mo-ni-qi.html</link><description># 简述
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Wed, 09 Jul 2025 16:30:31 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【算法】流体（沙子）模拟器</title><link>https://little-ki.github.io/post/%E3%80%90-suan-fa-%E3%80%91-liu-ti-%EF%BC%88-sha-zi-%EF%BC%89-mo-ni-qi.html</link><description># 简述
 这是一种模拟粒子移动以及粒子交互的方式，在游戏 Noita 中使用了此方式来模拟沙子及其它粒子，在[这儿](https://sandboxels.r74n.com/)可以找到在线示例。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-suan-fa-%E3%80%91-liu-ti-%EF%BC%88-sha-zi-%EF%BC%89-mo-ni-qi.html</guid><pubDate>Tue, 03 Jun 2025 07:11:17 +0000</pubDate></item><item><title>【内核】ObRegisterCallbacks 绕过</title><link>https://little-ki.github.io/post/%E3%80%90-nei-he-%E3%80%91ObRegisterCallbacks%20-rao-guo.html</link><description># 简介
 [`ObRegisterCallbacks`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-obregistercallbacks)是一个内核函数，用于创建回调来处理对线程、进程以及桌面句柄的操作。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-nei-he-%E3%80%91ObRegisterCallbacks%20-rao-guo.html</guid><pubDate>Sat, 10 May 2025 08:49:21 +0000</pubDate></item><item><title>【内核】禁用进程、线程、模块通知回调</title><link>https://little-ki.github.io/post/%E3%80%90-nei-he-%E3%80%91-jin-yong-jin-cheng-%E3%80%81-xian-cheng-%E3%80%81-mo-kuai-tong-zhi-hui-diao.html</link><description>[原文](https://www.unknowncheats.me/forum/1869089-post1.html)
 
