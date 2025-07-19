@@ -1,36 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Mon, 14 Jul 2025 16:05:49 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【文档】终极反调试参考</title><link>https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91-zhong-ji-fan-diao-shi-can-kao.html</link><description>原文：The Ultimate Anti-Debugging Reference
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/" version="2.0"><channel><title>Little-Ki's blog</title><link>https://little-ki.github.io</link><description>此处空无一物</description><copyright>Little-Ki's blog</copyright><docs>http://www.rssboard.org/rss-specification</docs><generator>python-feedgen</generator><image><url>https://github.githubassets.com/favicons/favicon.svg</url><title>avatar</title><link>https://little-ki.github.io</link></image><lastBuildDate>Sat, 19 Jul 2025 15:52:56 +0000</lastBuildDate><managingEditor>Little-Ki's blog</managingEditor><ttl>60</ttl><webMaster>Little-Ki's blog</webMaster><item><title>【文档】终极反调试参考</title><link>https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91-zhong-ji-fan-diao-shi-can-kao.html</link><description>原文：The Ultimate Anti-Debugging Reference
 
-# 1.NtGlobalFlag
-
-**NtGlobalFlag** 是 Process Environment Block (PEB) 的一个字段，位于 PEB + 0x68 (32位) / 0xBC (64位) 处，该值为零，在附加调试器时不会更改但在过程控制下可能会更改，由调试器创建的进程将有以下值：
-
-&gt; FLG_HEAP_ENABLE_TAIL_CHECK (0x10)
-&gt; FLG_HEAP_ENABLE_FREE_CHECK (0x20)
-&gt; FLG_HEAP_VALIDATE_PARAMETERS (0x40)
-
-可通过此方法检查：
-
-```asm
-; 32位
-mov eax, fs:[30h] ; Process Environment Block
-mov al, [eax+68h] ; NtGlobalFlag
-and al, 70h
-cmp al, 70h
-je being_debugged
-
-; 64位
-push 60h
-pop rsi
-gs:lodsq ;Process Environment Block
-mov al, [rsi*2+rax-14h] ;NtGlobalFlag
-and al, 70h
-cmp al, 70h
-je being_debugged
-```
-
-# 2.Heap Flags
-堆包含两个与NtGlobalFlag一起初始化的标志，分别为 **Flags** 和 **ForceFlags**。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91-zhong-ji-fan-diao-shi-can-kao.html</guid><pubDate>Mon, 14 Jul 2025 16:05:22 +0000</pubDate></item><item><title>【算法】流体（沙子）模拟器</title><link>https://little-ki.github.io/post/%E3%80%90-suan-fa-%E3%80%91-liu-ti-%EF%BC%88-sha-zi-%EF%BC%89-mo-ni-qi.html</link><description># 简述
+# 1. Process Environment Block (PEB) 结构检测
+[PEB](https://zh.wikipedia.org/wiki/%E8%BF%9B%E7%A8%8B%E7%8E%AF%E5%A2%83%E5%9D%97)：进程环境块，保存了关于进程的环境信息，其结构[在此](https://learn.microsoft.com/zh-cn/windows/win32/api/winternl/ns-winternl-peb)可查看。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-wen-dang-%E3%80%91-zhong-ji-fan-diao-shi-can-kao.html</guid><pubDate>Mon, 14 Jul 2025 16:05:22 +0000</pubDate></item><item><title>【算法】流体（沙子）模拟器</title><link>https://little-ki.github.io/post/%E3%80%90-suan-fa-%E3%80%91-liu-ti-%EF%BC%88-sha-zi-%EF%BC%89-mo-ni-qi.html</link><description># 简述
 这是一种模拟粒子移动以及粒子交互的方式，在游戏 Noita 中使用了此方式来模拟沙子及其它粒子，在[这儿](https://sandboxels.r74n.com/)可以找到在线示例。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-suan-fa-%E3%80%91-liu-ti-%EF%BC%88-sha-zi-%EF%BC%89-mo-ni-qi.html</guid><pubDate>Tue, 03 Jun 2025 07:11:17 +0000</pubDate></item><item><title>【内核】ObRegisterCallbacks 绕过</title><link>https://little-ki.github.io/post/%E3%80%90-nei-he-%E3%80%91ObRegisterCallbacks%20-rao-guo.html</link><description># 简介
 [`ObRegisterCallbacks`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-obregistercallbacks)是一个内核函数，用于创建回调来处理对线程、进程以及桌面句柄的操作。</description><guid isPermaLink="true">https://little-ki.github.io/post/%E3%80%90-nei-he-%E3%80%91ObRegisterCallbacks%20-rao-guo.html</guid><pubDate>Sat, 10 May 2025 08:49:21 +0000</pubDate></item><item><title>【内核】禁用进程、线程、模块通知回调</title><link>https://little-ki.github.io/post/%E3%80%90-nei-he-%E3%80%91-jin-yong-jin-cheng-%E3%80%81-xian-cheng-%E3%80%81-mo-kuai-tong-zhi-hui-diao.html</link><description>[原文](https://www.unknowncheats.me/forum/1869089-post1.html)
 
