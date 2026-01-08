@@ -79,52 +79,79 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>  LZ77是以色列计算机科学家Abraham Lempel与 Jacob 在1977 年发表之论文中的无损数据压缩算法。是大多数LZ算法变体如LZW、LZSS以及其它一些压缩算法的基础。</p>
 <h1>LZ77</h1>
 <h2>定义</h2>
-<p>  此过程将字符串 $S[1\ldots{n}]$ 分解为非空元素集合 $\{w_1,w_2,\ldots,w_k\}$，对于 $w_i$，有两者可能：</p>
+<p>  此过程将字符串 $S[1\ldots{n}]$ 分解为非空序列 $\{w_1,w_2,\ldots,w_k\}$，对于 $w_i$，有两者可能：</p>
 <ol>
-<li>一个新字符，$w_i\in{S[1\ldots{n}]}$ 且 $w_i\not\in{S[1\ldots{n-1}]}$
-</li>
 <li>
-$w_i$ 是 $\{w_1,\ldots,w_i\}$ 中出现至少两次的最长子串</li>
+<strong>新字符短语</strong>：$w_i$ 是当前未在已编码部分 $S[1\ldots p]$ 中出现的新字符，其中 $p$ 是当前位置前的索引。</li>
+<li>
+<strong>引用短语</strong>：$w_i$ 是当前字符起点向前最长匹配的子串，它在已编码的部分中至少出现一次。</li>
 </ol>
-<p>  $w_i$ 被称为因子或短语<br>
+<p>  $w_i$ 被称为<strong>因子</strong>或<strong>短语</strong>。<br>
   $S[i\ldots{j}]$ 表示位置 $i$ 到 $j$ 的子串，$S[i]$ 是 $i$ 处的字符</p>
 <h2>算法</h2>
 <p>  计算 LZ77 压缩的算法核心思想是将已处理的字符串用作字典。为了限制搜索时间，实际应用中通常限制字典的大小，因此通常使用滑动窗口（sliding window）。滑动窗口被分割为字典区和预览缓冲区。压缩过程中，字符逐步从预览缓冲区移动到字典中。实际应用中，字典缓冲区通常包含数千个字符，而预览缓冲区则包含约100个字符或更少。<br>
   算法输出由三元组组成，可以用来恢复原始文本。对于因子 $w_i$ 的三元组形式为 $(pos,len,\lambda)$：</p>
 <ul>
 <li>
-$pos$：$w_i$ 在字典中的先前位置（若无则为0）</li>
+$pos$：$w_i$ 在字典中的先前位置</li>
 <li>
-$len$：先前出现的长度（若为新字符则为0）</li>
+$len$：匹配长度</li>
 <li>
-$\lambda$： 匹配失败的字符（下一个字符）。</li>
+$\lambda$： 当前匹配后紧跟的字符。</li>
 </ul>
+<blockquote>
+<p>注：对于新字符因子，三元组形式为 $(0, 0, w_i)$。</p>
+</blockquote>
 <h2>压缩算法</h2>
-<p>  以字符串 $aacaacabcabaaac$ 为例说明 LZ77 压缩的计算过程，算法采用字典长度为12（紫色区域）和预览缓冲区（黄色区域）长度为10的滑动窗口模型。算法输出的三元组包括：</p>
-<ul>
-<li>(0, 0, a)</li>
-<li>(1, 1, c)</li>
-<li>(3, 4, b)</li>
-<li>(3, 3, a)</li>
-<li>(12, 3, end)</li>
-</ul>
-<p>  以下是算法过程演示：</p>
-<p><a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a2586844-d0e0-42cc-ae53-fadcaa018559"><img src="https://github.com/user-attachments/assets/a2586844-d0e0-42cc-ae53-fadcaa018559" alt="LZ77" style="max-width: 100%;"></a></p>
+<p>  以字符串 $S = \text{aacaacabcabaaac}$ 为例，说明 LZ77 压缩过程。<br>
+  假设滑动窗口的字典区长度为 12（紫色区域），预览缓冲区长度为 10（黄色区域）。<br>
+算法输出的三元组如下（$pos$ 为当前编码位置向前偏移量）：</p>
+<markdown-accessiblity-table><table role="table">
+<thead>
+<tr>
+<th>三元组 $(pos, len, \lambda)$
+</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(0, 0, a)</td>
+<td>新字符 <code class="notranslate">a</code>，无匹配</td>
+</tr>
+<tr>
+<td>(1, 1, c)</td>
+<td>匹配前面 1 个字符，长度 1，下一字符 <code class="notranslate">c</code>
+</td>
+</tr>
+<tr>
+<td>(3, 4, b)</td>
+<td>匹配向前偏移 3，长度 4，下一字符 <code class="notranslate">b</code>
+</td>
+</tr>
+<tr>
+<td>(3, 3, a)</td>
+<td>匹配向前偏移 3，长度 3，下一字符 <code class="notranslate">a</code>
+</td>
+</tr>
+<tr>
+<td>(12, 3, end)</td>
+<td>匹配向前偏移 12，长度 3，文本结束</td>
+</tr>
+</tbody>
+</table></markdown-accessiblity-table>
+<blockquote>
+<p>注：偏移量 $pos$ 是相对于当前位置向前计算的，<code class="notranslate">λ</code> 为匹配结束后紧跟的字符。<br>
+<a target="_blank" rel="noopener noreferrer" href="https://github.com/user-attachments/assets/a2586844-d0e0-42cc-ae53-fadcaa018559"><img src="https://github.com/user-attachments/assets/a2586844-d0e0-42cc-ae53-fadcaa018559" alt="LZ77" style="max-width: 100%;"></a></p>
+</blockquote>
 <h2>解压算法</h2>
 <p>  解压算法相较于压缩算法更加简单，其运行时间为 $O(n)$，对当前长度为 $n$ 字符串 $S$，迭代元组序列且对于任意元组 $(pos,len,\lambda)$：</p>
 <ul>
-<li>若 $pos=0$，则 $S\leftarrow{\lambda}$
-</li>
-<li>若 $pos\neq0$，则 <strong>for</strong> $1$ <strong>to</strong> $len$ <strong>do</strong> $S\leftarrow{S[n-pos+1]}$，然后若 $\lambda\neq{end}$ 则 $S\leftarrow{\lambda}$
-</li>
-</ul>
-<h2>无滑动窗LZ77</h2>
-<p>  此方法无需使用滑动窗来计算所需元组，它的方法是：</p>
-<ol>
-<li>设待压缩长为 $n$ 字符串为 $S$ 且 $S_x$ 为 $S[x\ldots{n}]$ 后缀。</li>
-<li>要计算字符串在 $k$ 位置对应的元组，需要找到最接近的 $S_i$、$S_j$ 且满足 $S_i&amp;lt;S_k,i\lt{k}$、$S_j&amp;gt;S_k,j\lt{k}$，然后计算 $(S_i, S_k)$ 和 $(S_j, S_k)$ 的最长公共前缀，从两个结果中选择较长的一项作为最长公共子串。</li>
-<li>这个算法的思想是：两个后缀的字典序大小越接近，则它们的公共前缀越长，此方法是从 $k$ 处向前寻找最长公共子串。</li>
-</ol></div>
+<li>若 $pos = 0$，则将字符 $\lambda$ 追加到 $S$ 的末尾；</li>
+<li>若 $pos \neq 0$，则对 $i = 1$ 到 $len$：<br>
+$S \leftarrow S \cdot S[n - pos + i]$<br>
+若 $\lambda \neq \text{end}$，则将 $\lambda$ 追加到 $S$ 的末尾。</li>
+</ul></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
 
 <button class="btn btn-block" type="button" onclick="openComments()" id="cmButton">评论</button>
