@@ -23,7 +23,7 @@
 <meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90-nei-he-%E3%80%91-jin-yong-jin-cheng-%E3%80%81-xian-cheng-%E3%80%81-mo-kuai-tong-zhi-hui-diao.html">
 <meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
 <title>【内核】禁用进程、线程、模块通知回调</title>
-<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
+
 
 
 </head>
@@ -47,17 +47,7 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     body {padding: 8px;}
     .postTitle{font-size:24px;}
 }
-.copy-feedback {
-    display: none;
-    position: absolute;
-    top: 10px;
-    right: 50px;
-    color: var(--color-fg-on-emphasis);
-    background-color: var(--color-fg-muted);
-    border-radius: 3px;
-    padding: 5px 8px;
-    font-size: 12px;
-}
+
 </style>
 
 
@@ -98,190 +88,196 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>从IDA中打开 ntoskrnl.exe 并检查 <code class="notranslate">PspCallThreadNotifyRoutines</code> 反汇编代码可以看到：</p>
 <details>
 <summary>显示</summary>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">int</span> __fastcall <span class="pl-en">PspCallThreadNotifyRoutines</span>(<span class="pl-smi">__int64</span> <span class="pl-s1">a1</span>, <span class="pl-smi">unsigned <span class="pl-smi">__int8</span></span> <span class="pl-s1">a2</span>, <span class="pl-smi">char</span> <span class="pl-s1">a3</span>) {
-    <span class="pl-smi">unsigned <span class="pl-smi">__int8</span></span> <span class="pl-s1">v3</span>; <span class="pl-c">// r14@1</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v4</span>; <span class="pl-c">// r15@1</span>
-    <span class="pl-smi">bool</span> <span class="pl-s1">v5</span>; <span class="pl-c">// r12@1</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v6</span>; <span class="pl-c">// rax@1</span>
-    <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">v7</span>; <span class="pl-c">// rbx@4</span>
-    <span class="pl-smi">signed <span class="pl-smi">__int64</span></span> <span class="pl-s1">v8</span>; <span class="pl-c">// rsi@4</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v9</span>; <span class="pl-c">// rbp@5</span>
-    <span class="pl-smi">char</span> <span class="pl-s1">v10</span>; <span class="pl-c">// al@8</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v11</span>; <span class="pl-c">// rcx@8</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v12</span>; <span class="pl-c">// rdi@10</span>
-    <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">v13</span>; <span class="pl-c">// rbx@16</span>
-    <span class="pl-smi">signed <span class="pl-smi">__int64</span></span> <span class="pl-s1">v14</span>; <span class="pl-c">// rsi@16</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v15</span>; <span class="pl-c">// rbp@17</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v16</span>; <span class="pl-c">// rdi@21</span>
-    <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">v17</span>; <span class="pl-c">// rbx@13</span>
-    <span class="pl-smi">signed <span class="pl-smi">__int64</span></span> <span class="pl-s1">v18</span>; <span class="pl-c">// rsi@13</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v19</span>; <span class="pl-c">// rbp@25</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v20</span>; <span class="pl-c">// rcx@26</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v21</span>; <span class="pl-c">// rdi@27</span>
+<pre lang="c" class="notranslate"><code class="notranslate">int __fastcall PspCallThreadNotifyRoutines(__int64 a1, unsigned __int8 a2, char a3) {
+    unsigned __int8 v3; // r14@1
+    __int64 v4; // r15@1
+    bool v5; // r12@1
+    __int64 v6; // rax@1
+    void * v7; // rbx@4
+    signed __int64 v8; // rsi@4
+    __int64 v9; // rbp@5
+    char v10; // al@8
+    __int64 v11; // rcx@8
+    __int64 v12; // rdi@10
+    void * v13; // rbx@16
+    signed __int64 v14; // rsi@16
+    __int64 v15; // rbp@17
+    __int64 v16; // rdi@21
+    void * v17; // rbx@13
+    signed __int64 v18; // rsi@13
+    __int64 v19; // rbp@25
+    __int64 v20; // rcx@26
+    __int64 v21; // rdi@27
 
-    <span class="pl-s1">v3</span> <span class="pl-c1">=</span> <span class="pl-s1">a2</span>;
-    <span class="pl-s1">v4</span> <span class="pl-c1">=</span> <span class="pl-s1">a1</span>;
-    <span class="pl-s1">v5</span> <span class="pl-c1">=</span> <span class="pl-c1">*</span> (<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">a1</span> <span class="pl-c1">+</span> <span class="pl-c1">1944</span>) <span class="pl-c1">!=</span> <span class="pl-c1">0</span> <span class="pl-s1">i64</span>;
-    <span class="pl-en">LODWORD</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">=</span> <span class="pl-s1">PspNotifyEnableMask</span>;
-    <span class="pl-k">if</span> (<span class="pl-s1">a2</span>) {
-        <span class="pl-k">if</span> (<span class="pl-s1">a3</span>) {
-            <span class="pl-k">if</span> (<span class="pl-s1">PspNotifyEnableMask</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">0x10</span>) {
-                <span class="pl-s1">v17</span> <span class="pl-c1">=</span> <span class="pl-c1">&amp;</span> <span class="pl-s1">PspCreateThreadNotifyRoutine</span>;
-                <span class="pl-s1">v18</span> <span class="pl-c1">=</span> <span class="pl-c1">64</span> <span class="pl-s1">i64</span>;
-                <span class="pl-k">do</span> {
-                    <span class="pl-en">LODWORD</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">=</span> <span class="pl-en">ExReferenceCallBackBlock</span>(<span class="pl-s1">v17</span>);
-                    <span class="pl-s1">v19</span> <span class="pl-c1">=</span> <span class="pl-s1">v6</span>;
-                    <span class="pl-k">if</span> (<span class="pl-s1">v6</span>) {
-                        <span class="pl-k">if</span> (<span class="pl-en">ExGetCallBackBlockContext</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">&amp;</span> <span class="pl-c1">1</span>) {
-                            <span class="pl-s1">v21</span> <span class="pl-c1">=</span> <span class="pl-c1">*</span> (<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v4</span> <span class="pl-c1">+</span> <span class="pl-c1">544</span>);
-                            <span class="pl-en">ExGetCallBackBlockRoutine</span>(<span class="pl-s1">v20</span>);
-                            <span class="pl-en">guard_dispatch_icall</span>( <span class="pl-c1">*</span> (<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v21</span> <span class="pl-c1">+</span> <span class="pl-c1">736</span>), <span class="pl-c1">*</span>(<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v4</span> <span class="pl-c1">+</span> <span class="pl-c1">1600</span>), <span class="pl-s1">v3</span>);
+    v3 = a2;
+    v4 = a1;
+    v5 = * (_QWORD * )(a1 + 1944) != 0 i64;
+    LODWORD(v6) = PspNotifyEnableMask;
+    if (a2) {
+        if (a3) {
+            if (PspNotifyEnableMask &amp; 0x10) {
+                v17 = &amp; PspCreateThreadNotifyRoutine;
+                v18 = 64 i64;
+                do {
+                    LODWORD(v6) = ExReferenceCallBackBlock(v17);
+                    v19 = v6;
+                    if (v6) {
+                        if (ExGetCallBackBlockContext(v6) &amp; 1) {
+                            v21 = * (_QWORD * )(v4 + 544);
+                            ExGetCallBackBlockRoutine(v20);
+                            guard_dispatch_icall( * (_QWORD * )(v21 + 736), *(_QWORD * )(v4 + 1600), v3);
                         }
-                        <span class="pl-en">LODWORD</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">=</span> <span class="pl-en">ExDereferenceCallBackBlock</span>(<span class="pl-s1">v17</span>, <span class="pl-s1">v19</span>);
+                        LODWORD(v6) = ExDereferenceCallBackBlock(v17, v19);
                     }
-                    <span class="pl-s1">v17</span> <span class="pl-c1">=</span> (<span class="pl-smi">char</span> <span class="pl-c1">*</span> ) <span class="pl-s1">v17</span> <span class="pl-c1">+</span> <span class="pl-c1">8</span>;
-                    <span class="pl-c1">--</span><span class="pl-s1">v18</span>;
+                    v17 = (char * ) v17 + 8;
+                    --v18;
                 }
-                <span class="pl-k">while</span> (<span class="pl-s1">v18</span>);
+                while (v18);
             }
-        } <span class="pl-k">else</span> <span class="pl-k">if</span> (<span class="pl-s1">PspNotifyEnableMask</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">8</span>) {
-            <span class="pl-s1">v7</span> <span class="pl-c1">=</span> <span class="pl-c1">&amp;</span> <span class="pl-s1">PspCreateThreadNotifyRoutine</span>;
-            <span class="pl-s1">v8</span> <span class="pl-c1">=</span> <span class="pl-c1">64</span> <span class="pl-s1">i64</span>;
-            <span class="pl-k">do</span> {
-                <span class="pl-en">LODWORD</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">=</span> <span class="pl-en">ExReferenceCallBackBlock</span>(<span class="pl-s1">v7</span>);
-                <span class="pl-s1">v9</span> <span class="pl-c1">=</span> <span class="pl-s1">v6</span>;
-                <span class="pl-k">if</span> (<span class="pl-s1">v6</span>) {
-                    <span class="pl-s1">v10</span> <span class="pl-c1">=</span> <span class="pl-en">ExGetCallBackBlockContext</span>(<span class="pl-s1">v6</span>);
-                    <span class="pl-k">if</span> (!(<span class="pl-s1">v10</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">1</span>) <span class="pl-c1">&amp;&amp;</span> (!<span class="pl-s1">v5</span> <span class="pl-c1">||</span> <span class="pl-s1">v10</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">2</span>)) {
-                        <span class="pl-s1">v12</span> <span class="pl-c1">=</span> <span class="pl-c1">*</span> (<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v4</span> <span class="pl-c1">+</span> <span class="pl-c1">544</span>);
-                        <span class="pl-en">ExGetCallBackBlockRoutine</span>(<span class="pl-s1">v11</span>);
-                        <span class="pl-en">guard_dispatch_icall</span>( <span class="pl-c1">*</span> (<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v12</span> <span class="pl-c1">+</span> <span class="pl-c1">736</span>), <span class="pl-c1">*</span>(<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v4</span> <span class="pl-c1">+</span> <span class="pl-c1">1600</span>), <span class="pl-s1">v3</span>);
+        } else if (PspNotifyEnableMask &amp; 8) {
+            v7 = &amp; PspCreateThreadNotifyRoutine;
+            v8 = 64 i64;
+            do {
+                LODWORD(v6) = ExReferenceCallBackBlock(v7);
+                v9 = v6;
+                if (v6) {
+                    v10 = ExGetCallBackBlockContext(v6);
+                    if (!(v10 &amp; 1) &amp;&amp; (!v5 || v10 &amp; 2)) {
+                        v12 = * (_QWORD * )(v4 + 544);
+                        ExGetCallBackBlockRoutine(v11);
+                        guard_dispatch_icall( * (_QWORD * )(v12 + 736), *(_QWORD * )(v4 + 1600), v3);
                     }
-                    <span class="pl-en">LODWORD</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">=</span> <span class="pl-en">ExDereferenceCallBackBlock</span>(<span class="pl-s1">v7</span>, <span class="pl-s1">v9</span>);
+                    LODWORD(v6) = ExDereferenceCallBackBlock(v7, v9);
                 }
-                <span class="pl-s1">v7</span> <span class="pl-c1">=</span> (<span class="pl-smi">char</span> <span class="pl-c1">*</span> ) <span class="pl-s1">v7</span> <span class="pl-c1">+</span> <span class="pl-c1">8</span>;
-                <span class="pl-c1">--</span><span class="pl-s1">v8</span>;
+                v7 = (char * ) v7 + 8;
+                --v8;
             }
-            <span class="pl-k">while</span> (<span class="pl-s1">v8</span>);
+            while (v8);
         }
-    } <span class="pl-k">else</span> <span class="pl-k">if</span> (<span class="pl-s1">PspNotifyEnableMask</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">0x10</span> <span class="pl-c1">||</span> (<span class="pl-en">LODWORD</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">=</span> <span class="pl-s1">PspNotifyEnableMask</span>, <span class="pl-s1">PspNotifyEnableMask</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">8</span>)) {
-        <span class="pl-s1">v13</span> <span class="pl-c1">=</span> <span class="pl-c1">&amp;</span> <span class="pl-s1">PspCreateThreadNotifyRoutine</span>;
-        <span class="pl-s1">v14</span> <span class="pl-c1">=</span> <span class="pl-c1">64</span> <span class="pl-s1">i64</span>;
-        <span class="pl-k">do</span> {
-            <span class="pl-en">LODWORD</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">=</span> <span class="pl-en">ExReferenceCallBackBlock</span>(<span class="pl-s1">v13</span>);
-            <span class="pl-s1">v15</span> <span class="pl-c1">=</span> <span class="pl-s1">v6</span>;
-            <span class="pl-k">if</span> (<span class="pl-s1">v6</span>) {
-                <span class="pl-k">if</span> (!<span class="pl-s1">v5</span> <span class="pl-c1">||</span> <span class="pl-en">ExGetCallBackBlockContext</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">&amp;</span> <span class="pl-c1">2</span>) {
-                    <span class="pl-s1">v16</span> <span class="pl-c1">=</span> <span class="pl-c1">*</span> (<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v4</span> <span class="pl-c1">+</span> <span class="pl-c1">544</span>);
-                    <span class="pl-en">ExGetCallBackBlockRoutine</span>(<span class="pl-s1">v15</span>);
-                    <span class="pl-en">guard_dispatch_icall</span>( <span class="pl-c1">*</span> (<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v16</span> <span class="pl-c1">+</span> <span class="pl-c1">736</span>), <span class="pl-c1">*</span>(<span class="pl-smi">_QWORD</span> <span class="pl-c1">*</span> )(<span class="pl-s1">v4</span> <span class="pl-c1">+</span> <span class="pl-c1">1600</span>), <span class="pl-c1">0</span> <span class="pl-s1">i64</span>);
+    } else if (PspNotifyEnableMask &amp; 0x10 || (LODWORD(v6) = PspNotifyEnableMask, PspNotifyEnableMask &amp; 8)) {
+        v13 = &amp; PspCreateThreadNotifyRoutine;
+        v14 = 64 i64;
+        do {
+            LODWORD(v6) = ExReferenceCallBackBlock(v13);
+            v15 = v6;
+            if (v6) {
+                if (!v5 || ExGetCallBackBlockContext(v6) &amp; 2) {
+                    v16 = * (_QWORD * )(v4 + 544);
+                    ExGetCallBackBlockRoutine(v15);
+                    guard_dispatch_icall( * (_QWORD * )(v16 + 736), *(_QWORD * )(v4 + 1600), 0 i64);
                 }
-                <span class="pl-en">LODWORD</span>(<span class="pl-s1">v6</span>) <span class="pl-c1">=</span> <span class="pl-en">ExDereferenceCallBackBlock</span>(<span class="pl-s1">v13</span>, <span class="pl-s1">v15</span>);
+                LODWORD(v6) = ExDereferenceCallBackBlock(v13, v15);
             }
-            <span class="pl-s1">v13</span> <span class="pl-c1">=</span> (<span class="pl-smi">char</span> <span class="pl-c1">*</span> ) <span class="pl-s1">v13</span> <span class="pl-c1">+</span> <span class="pl-c1">8</span>;
-            <span class="pl-c1">--</span><span class="pl-s1">v14</span>;
+            v13 = (char * ) v13 + 8;
+            --v14;
         }
-        <span class="pl-k">while</span> (<span class="pl-s1">v14</span>);
+        while (v14);
     }
-    <span class="pl-k">return</span> <span class="pl-s1">v6</span>;
-}</pre></div>
+    return v6;
+}
+</code></pre>
 </details>
 <p>显然可以简单地将PspNotifyEnableMask设为0来跳过任何例程，但这将阻止进程创建，因此检查 <code class="notranslate">PsSetCreateThreadNotifyRoutine</code>：</p>
 <details>
 <summary>显示</summary>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">signed <span class="pl-smi">__int64</span></span> __fastcall <span class="pl-en">PspSetCreateThreadNotifyRoutine</span>(<span class="pl-smi">__int64</span> <span class="pl-s1">a1</span>, <span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-s1">a2</span>) {
-    <span class="pl-smi">char</span> <span class="pl-s1">v2</span>; <span class="pl-c">// si@1</span>
-    <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">v3</span>; <span class="pl-c">// rax@1</span>
-    <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">v4</span>; <span class="pl-c">// rdi@1</span>
-    <span class="pl-smi">__int64</span> <span class="pl-s1">v5</span>; <span class="pl-c">// rbx@2</span>
-    <span class="pl-smi">signed <span class="pl-smi">__int64</span></span> <span class="pl-s1">result</span>; <span class="pl-c">// rax@7</span>
+<pre lang="c" class="notranslate"><code class="notranslate">signed __int64 __fastcall PspSetCreateThreadNotifyRoutine(__int64 a1, unsigned int a2) {
+    char v2; // si@1
+    void * v3; // rax@1
+    void * v4; // rdi@1
+    __int64 v5; // rbx@2
+    signed __int64 result; // rax@7
 
-    <span class="pl-s1">v2</span> <span class="pl-c1">=</span> <span class="pl-s1">a2</span>;
-    <span class="pl-en">LODWORD</span>(<span class="pl-s1">v3</span>) <span class="pl-c1">=</span> <span class="pl-en">ExAllocateCallBack</span>(<span class="pl-s1">a1</span>, <span class="pl-s1">a2</span>);
-    <span class="pl-s1">v4</span> <span class="pl-c1">=</span> <span class="pl-s1">v3</span>;
-    <span class="pl-k">if</span> (<span class="pl-s1">v3</span>) {
-        <span class="pl-s1">v5</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span> <span class="pl-s1">i64</span>;
-        <span class="pl-k">while</span> (!(<span class="pl-smi">unsigned <span class="pl-smi">__int8</span></span>) <span class="pl-en">ExCompareExchangeCallBack</span>((<span class="pl-smi">char</span> <span class="pl-c1">*</span> ) <span class="pl-c1">&amp;</span> <span class="pl-s1">PspCreateThreadNotifyRoutine</span> <span class="pl-c1">+</span> <span class="pl-c1">8</span> <span class="pl-c1">*</span> <span class="pl-s1">v5</span>, <span class="pl-s1">v4</span>, <span class="pl-c1">0</span> <span class="pl-s1">i64</span>)) {
-            <span class="pl-s1">v5</span> <span class="pl-c1">=</span> (<span class="pl-smi">unsigned <span class="pl-smi">int</span></span>)(<span class="pl-s1">v5</span> <span class="pl-c1">+</span> <span class="pl-c1">1</span>);
-            <span class="pl-k">if</span> ((<span class="pl-smi">unsigned <span class="pl-smi">int</span></span>) <span class="pl-s1">v5</span> &gt;= <span class="pl-c1">0x40</span>) {
-                <span class="pl-en">ExFreePoolWithTag</span>(<span class="pl-s1">v4</span>, <span class="pl-c1">0</span>);
-                goto <span class="pl-ent">LABEL_11</span>;
+    v2 = a2;
+    LODWORD(v3) = ExAllocateCallBack(a1, a2);
+    v4 = v3;
+    if (v3) {
+        v5 = 0 i64;
+        while (!(unsigned __int8) ExCompareExchangeCallBack((char * ) &amp; PspCreateThreadNotifyRoutine + 8 * v5, v4, 0 i64)) {
+            v5 = (unsigned int)(v5 + 1);
+            if ((unsigned int) v5 &gt;= 0x40) {
+                ExFreePoolWithTag(v4, 0);
+                goto LABEL_11;
             }
         }
-        <span class="pl-k">if</span> (<span class="pl-s1">v2</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">1</span>) {
-            <span class="pl-en">_InterlockedIncrement</span>((<span class="pl-k">volatile</span> <span class="pl-smi">signed <span class="pl-smi">__int32</span></span> <span class="pl-c1">*</span> ) <span class="pl-c1">&amp;</span> <span class="pl-s1">PspCreateThreadNotifyRoutineNonSystemCount</span>);
-            <span class="pl-k">if</span> (!(<span class="pl-s1">PspNotifyEnableMask</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">0x10</span>))
-                <span class="pl-en">_interlockedbittestandset</span>((<span class="pl-k">volatile</span> <span class="pl-smi">signed <span class="pl-smi">__int32</span></span> <span class="pl-c1">*</span> ) <span class="pl-c1">&amp;</span> <span class="pl-s1">PspNotifyEnableMask</span>, <span class="pl-c1">4</span> <span class="pl-s1">u</span>);
-        } <span class="pl-k">else</span> {
-            <span class="pl-en">_InterlockedIncrement</span>((<span class="pl-k">volatile</span> <span class="pl-smi">signed <span class="pl-smi">__int32</span></span> <span class="pl-c1">*</span> ) <span class="pl-c1">&amp;</span> <span class="pl-s1">PspCreateThreadNotifyRoutineCount</span>);
-            <span class="pl-k">if</span> (!(<span class="pl-s1">PspNotifyEnableMask</span> <span class="pl-c1">&amp;</span> <span class="pl-c1">8</span>))
-                <span class="pl-en">_interlockedbittestandset</span>((<span class="pl-k">volatile</span> <span class="pl-smi">signed <span class="pl-smi">__int32</span></span> <span class="pl-c1">*</span> ) <span class="pl-c1">&amp;</span> <span class="pl-s1">PspNotifyEnableMask</span>, <span class="pl-c1">3</span> <span class="pl-s1">u</span>);
+        if (v2 &amp; 1) {
+            _InterlockedIncrement((volatile signed __int32 * ) &amp; PspCreateThreadNotifyRoutineNonSystemCount);
+            if (!(PspNotifyEnableMask &amp; 0x10))
+                _interlockedbittestandset((volatile signed __int32 * ) &amp; PspNotifyEnableMask, 4 u);
+        } else {
+            _InterlockedIncrement((volatile signed __int32 * ) &amp; PspCreateThreadNotifyRoutineCount);
+            if (!(PspNotifyEnableMask &amp; 8))
+                _interlockedbittestandset((volatile signed __int32 * ) &amp; PspNotifyEnableMask, 3 u);
         }
-        <span class="pl-s1">result</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span> <span class="pl-s1">i64</span>;
-    } <span class="pl-k">else</span> {
-        <span class="pl-ent">LABEL_11</span>: <span class="pl-s1">result</span> <span class="pl-c1">=</span> <span class="pl-c1">3221225626</span> <span class="pl-s1">i64</span>;
+        result = 0 i64;
+    } else {
+        LABEL_11: result = 3221225626 i64;
     }
-    <span class="pl-k">return</span> <span class="pl-s1">result</span>;
-}</pre></div>
+    return result;
+}
+</code></pre>
 </details>
 <p>注意到其中有：</p>
-<div class="highlight highlight-source-c"><pre class="notranslate"> <span class="pl-en">_interlockedbittestandset</span>((<span class="pl-k">volatile</span> <span class="pl-smi">signed <span class="pl-smi">__int32</span></span> <span class="pl-c1">*</span>)<span class="pl-c1">&amp;</span><span class="pl-s1">PspNotifyEnableMask</span>, <span class="pl-c1">4u</span>);
- <span class="pl-en">_interlockedbittestandset</span>((<span class="pl-k">volatile</span> <span class="pl-smi">signed <span class="pl-smi">__int32</span></span> <span class="pl-c1">*</span>)<span class="pl-c1">&amp;</span><span class="pl-s1">PspNotifyEnableMask</span>, <span class="pl-c1">3u</span>);</pre></div>
+<pre lang="c" class="notranslate"><code class="notranslate"> _interlockedbittestandset((volatile signed __int32 *)&amp;PspNotifyEnableMask, 4u);
+ _interlockedbittestandset((volatile signed __int32 *)&amp;PspNotifyEnableMask, 3u);
+</code></pre>
 <p>通过 <a href="https://msdn.microsoft.com/en-us/library/646k06sz.aspx" rel="nofollow">MSDN文档</a> 可知，此函数将对应地址的指定位设置为1，所以<code class="notranslate">PspNotifyEnableMask</code>是无符号数，并且将位3和4设置为0将使Windows认为没有线程创建通知例程被安装并跳过它们。<br>
 并且如果查看<code class="notranslate">PsSetLoadImageNotifyRoutine</code>还注意到有：</p>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-en">_interlockedbittestandset</span>((<span class="pl-k">volatile</span> <span class="pl-smi">signed <span class="pl-smi">__int32</span></span> <span class="pl-c1">*</span>)<span class="pl-c1">&amp;</span><span class="pl-s1">PspNotifyEnableMask</span>, <span class="pl-c1">0</span>);</pre></div>
+<pre lang="c" class="notranslate"><code class="notranslate">_interlockedbittestandset((volatile signed __int32 *)&amp;PspNotifyEnableMask, 0);
+</code></pre>
 <p>将其位0设为0将跳过模块加载通知，想要跳过进程创建通知，则设置位1和2：<br>
 0 = LoadImage<br>
 1-2 = CreateProcess<br>
 3-4 = CreateThread</p>
 <h1>实现</h1>
 <p>由于<code class="notranslate">PspNotifyEnableMask</code>是未公开变量，因此需要使用特征扫描方式来搜索它：</p>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">ULONG64</span> <span class="pl-en">GetNotifyVarAddress</span>() {
-    <span class="pl-smi">ULONG64</span> <span class="pl-s1">i</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span>;
-    <span class="pl-smi">PULONG64</span> <span class="pl-s1">pAddrOfFnc</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span>;
-    <span class="pl-smi">UNICODE_STRING</span> <span class="pl-s1">fncName</span>;
-    <span class="pl-en">RtlInitUnicodeString</span>( <span class="pl-c1">&amp;</span> <span class="pl-s1">fncName</span>, <span class="pl-c1">L</span> <span class="pl-s">"PsSetLoadImageNotifyRoutine"</span>);
-    <span class="pl-smi">ULONG64</span> <span class="pl-s1">fncAddr</span> <span class="pl-c1">=</span> (<span class="pl-smi">ULONG64</span>) <span class="pl-en">MmGetSystemRoutineAddress</span>( <span class="pl-c1">&amp;</span> <span class="pl-s1">fncName</span>);
-    <span class="pl-k">if</span> (<span class="pl-s1">fncAddr</span>) {
-        <span class="pl-s1">fncAddr</span> <span class="pl-c1">+=</span> <span class="pl-c1">0x50</span>;
-        <span class="pl-k">for</span> (<span class="pl-s1">i</span> <span class="pl-c1">=</span> <span class="pl-s1">fncAddr</span>; <span class="pl-s1">i</span> <span class="pl-c1">&lt;</span> <span class="pl-s1">fncAddr</span> <span class="pl-c1">+</span> <span class="pl-c1">0x15</span>; <span class="pl-s1">i</span><span class="pl-c1">++</span>) {
-            <span class="pl-k">if</span> ( <span class="pl-c1">*</span> (<span class="pl-smi">UCHAR</span> <span class="pl-c1">*</span> ) <span class="pl-s1">i</span> <span class="pl-c1">==</span> <span class="pl-c1">0x8B</span> <span class="pl-c1">&amp;&amp;</span> <span class="pl-c1">*</span> (<span class="pl-smi">UCHAR</span> <span class="pl-c1">*</span> )(<span class="pl-s1">i</span> <span class="pl-c1">+</span> <span class="pl-c1">1</span>) <span class="pl-c1">==</span> <span class="pl-c1">0x05</span>) {
-                <span class="pl-smi">LONG</span> <span class="pl-s1">OffsetAddr</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span>;
-                <span class="pl-en">memcpy</span>( <span class="pl-c1">&amp;</span> <span class="pl-s1">OffsetAddr</span>, (<span class="pl-smi">UCHAR</span> <span class="pl-c1">*</span> )(<span class="pl-s1">i</span> <span class="pl-c1">+</span> <span class="pl-c1">2</span>), <span class="pl-c1">4</span>);
+<pre lang="c" class="notranslate"><code class="notranslate">ULONG64 GetNotifyVarAddress() {
+    ULONG64 i = 0;
+    PULONG64 pAddrOfFnc = 0;
+    UNICODE_STRING fncName;
+    RtlInitUnicodeString( &amp; fncName, L "PsSetLoadImageNotifyRoutine");
+    ULONG64 fncAddr = (ULONG64) MmGetSystemRoutineAddress( &amp; fncName);
+    if (fncAddr) {
+        fncAddr += 0x50;
+        for (i = fncAddr; i &lt; fncAddr + 0x15; i++) {
+            if ( * (UCHAR * ) i == 0x8B &amp;&amp; * (UCHAR * )(i + 1) == 0x05) {
+                LONG OffsetAddr = 0;
+                memcpy( &amp; OffsetAddr, (UCHAR * )(i + 2), 4);
 
-                <span class="pl-s1">pAddrOfFnc</span> <span class="pl-c1">=</span> (<span class="pl-smi">ULONG64</span> <span class="pl-c1">*</span> )(<span class="pl-s1">OffsetAddr</span> <span class="pl-c1">+</span> <span class="pl-s1">i</span> <span class="pl-c1">+</span> <span class="pl-c1">0x6</span>);
-                <span class="pl-k">break</span>;
+                pAddrOfFnc = (ULONG64 * )(OffsetAddr + i + 0x6);
+                break;
             }
         }
-        <span class="pl-k">return</span> (<span class="pl-smi">ULONG64</span>) <span class="pl-s1">pAddrOfFnc</span>;
+        return (ULONG64) pAddrOfFnc;
     }
-    <span class="pl-k">return</span> <span class="pl-c1">0</span>;
-}</pre></div>
+    return 0;
+}
+</code></pre>
 <p>然后设置其位：</p>
-<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">#define</span> <span class="pl-en">SETBIT</span>(<span class="pl-c1">X</span>, <span class="pl-c1">Y</span>) X |= (1 ULL &lt;&lt; (Y))
-<span class="pl-k">#define</span> <span class="pl-en">UNSETBIT</span>(<span class="pl-c1">X</span>, <span class="pl-c1">Y</span>) X &amp;= (~(1 ULL &lt;&lt; (Y)))
+<pre lang="c" class="notranslate"><code class="notranslate">#define SETBIT(X, Y) X |= (1 ULL &lt;&lt; (Y))
+#define UNSETBIT(X, Y) X &amp;= (~(1 ULL &lt;&lt; (Y)))
 
-<span class="pl-smi">VOID</span> <span class="pl-en">CHANGE_NOTIFY_MASK</span>(<span class="pl-smi">BOOLEAN</span> <span class="pl-s1">enableThread</span>, <span class="pl-smi">BOOLEAN</span> <span class="pl-s1">enableImage</span>) {
-    <span class="pl-smi">ULONG64</span> <span class="pl-s1">varaddress</span> <span class="pl-c1">=</span> <span class="pl-en">GetNotifyVarAddress</span>();
-    <span class="pl-k">if</span> (<span class="pl-s1">varaddress</span>) {
-        <span class="pl-smi">ULONG</span> <span class="pl-s1">val</span> <span class="pl-c1">=</span> <span class="pl-c1">*</span> (<span class="pl-smi">ULONG</span> <span class="pl-c1">*</span> )(<span class="pl-s1">varaddress</span>);
-        <span class="pl-k">if</span> (!<span class="pl-s1">enableThread</span>) {
-            <span class="pl-en">UNSETBIT</span>(<span class="pl-s1">val</span>, <span class="pl-c1">3</span>);
-            <span class="pl-en">UNSETBIT</span>(<span class="pl-s1">val</span>, <span class="pl-c1">4</span>);
-        } <span class="pl-k">else</span> {
-            <span class="pl-en">SETBIT</span>(<span class="pl-s1">val</span>, <span class="pl-c1">3</span>);
-            <span class="pl-en">SETBIT</span>(<span class="pl-s1">val</span>, <span class="pl-c1">4</span>);
+VOID CHANGE_NOTIFY_MASK(BOOLEAN enableThread, BOOLEAN enableImage) {
+    ULONG64 varaddress = GetNotifyVarAddress();
+    if (varaddress) {
+        ULONG val = * (ULONG * )(varaddress);
+        if (!enableThread) {
+            UNSETBIT(val, 3);
+            UNSETBIT(val, 4);
+        } else {
+            SETBIT(val, 3);
+            SETBIT(val, 4);
         }
 
-        <span class="pl-k">if</span> (!<span class="pl-s1">enableImage</span>) {
-            <span class="pl-en">UNSETBIT</span>(<span class="pl-s1">val</span>, <span class="pl-c1">0</span>);
-        } <span class="pl-k">else</span> {
-            <span class="pl-en">SETBIT</span>(<span class="pl-s1">val</span>, <span class="pl-c1">0</span>);
+        if (!enableImage) {
+            UNSETBIT(val, 0);
+        } else {
+            SETBIT(val, 0);
         }
 
-        <span class="pl-c1">*</span>(<span class="pl-smi">ULONG</span> <span class="pl-c1">*</span> )(<span class="pl-s1">varaddress</span>) <span class="pl-c1">=</span> <span class="pl-s1">val</span>;
+        *(ULONG * )(varaddress) = val;
     }
-}</pre></div>
+}
+</code></pre>
 <h1>结尾</h1>
 <p>现在可以在游戏内创建线程以及加载黑名单驱动程序了，但由于可以枚举模块以及线程，因此仅使用此方式不是完全有效。<br>
 此方法在 Windows 10 version 1703（build 15063）上是PatchGuard安全的。</p></div>
@@ -309,7 +305,7 @@ if(""!=""){
 </script></div>
 </body>
 <script>
-var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
 var utterancesLoad=0;
 
 let themeSettings={
@@ -382,70 +378,7 @@ function iFrameLoading(){
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const createClipboardHTML = (codeContent, additionalClasses = '') => `
-        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
-        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
-            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
-                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
-                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
-            </clipboard-copy>
-            <div class="copy-feedback">Copied!</div>
-        </div>
-    `;
 
-    const handleCodeElements = (selector = '') => {
-        document.querySelectorAll(selector).forEach(codeElement => {
-            const codeContent = codeElement.innerHTML;
-            const newStructure = document.createElement('div');
-            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
-            newStructure.innerHTML = createClipboardHTML(codeContent);
-
-            const parentElement = codeElement.parentElement;
-            if (selector.includes('highlight')) {
-                parentElement.insertBefore(newStructure, codeElement.nextSibling);
-                parentElement.removeChild(codeElement);
-            } else {
-                parentElement.parentElement.replaceChild(newStructure, parentElement);
-            }
-        });
-    };
-
-    handleCodeElements('pre.notranslate > code.notranslate');
-    handleCodeElements('div.highlight > pre.notranslate');
-
-    let currentFeedback = null;
-    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
-        copyButton.addEventListener('click', () => {
-            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
-            const tempTextArea = document.createElement('textarea');
-            tempTextArea.value = codeContent;
-            document.body.appendChild(tempTextArea);
-            tempTextArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempTextArea);
-
-            const copyIcon = copyButton.querySelector('.octicon-copy');
-            const checkIcon = copyButton.querySelector('.octicon-check');
-            const copyFeedback = copyButton.nextElementSibling;
-
-            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
-            currentFeedback = copyFeedback;
-
-            copyIcon.classList.add('d-none');
-            checkIcon.classList.remove('d-none');
-            copyFeedback.style.display = 'block';
-            copyButton.style.borderColor = 'var(--color-success-fg)';
-
-            setTimeout(() => {
-                copyIcon.classList.remove('d-none');
-                checkIcon.classList.add('d-none');
-                copyFeedback.style.display = 'none';
-                copyButton.style.borderColor = '';
-            }, 2000);
-        });
-    });
-});
 
 </script>
 <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekTOC.js'></script><script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script>
