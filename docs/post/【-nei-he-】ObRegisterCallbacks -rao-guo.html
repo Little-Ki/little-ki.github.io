@@ -19,7 +19,7 @@
 <meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90-nei-he-%E3%80%91ObRegisterCallbacks%20-rao-guo.html">
 <meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
 <title>【内核】ObRegisterCallbacks 绕过</title>
-
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
 
 
 </head>
@@ -90,120 +90,114 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>此函数常被用在反作弊以及反病毒软件。</p>
 <p>特别的，反作弊软件的内核驱动使用此方式剥离用户模式下的<code class="notranslate">OpenProcess</code>访问权限来阻止内存写入及读取。</p>
 <h2>函数签名</h2>
-<pre lang="c" class="notranslate"><code class="notranslate">NTSTATUS ObRegisterCallbacks(
-  [in]  POB_CALLBACK_REGISTRATION CallbackRegistration,
-  [out] PVOID                     *RegistrationHandle
-);
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">NTSTATUS</span> <span class="pl-s1">ObRegisterCallbacks</span>(
+  [<span class="pl-s1">in</span>]  <span class="pl-smi">POB_CALLBACK_REGISTRATION</span> <span class="pl-s1">CallbackRegistration</span>,<span class="pl-s1"></span>
+  [<span class="pl-s1">out</span>] <span class="pl-c1">PVOID</span>                     <span class="pl-c1">*</span><span class="pl-s1">RegistrationHandle</span>
+);</pre></div>
 <h2>结构</h2>
-<pre lang="c" class="notranslate"><code class="notranslate">typedef struct _OB_CALLBACK_REGISTRATION {
-  USHORT                    Version;
-  USHORT                    OperationRegistrationCount;
-  UNICODE_STRING            Altitude;
-  PVOID                     RegistrationContext;
-  OB_OPERATION_REGISTRATION *OperationRegistration;
-} OB_CALLBACK_REGISTRATION, *POB_CALLBACK_REGISTRATION;
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">typedef</span> <span class="pl-k">struct</span> <span class="pl-smi">_OB_CALLBACK_REGISTRATION</span> {
+  <span class="pl-smi">USHORT</span>                    <span class="pl-c1">Version</span>;
+  <span class="pl-smi">USHORT</span>                    <span class="pl-c1">OperationRegistrationCount</span>;
+  <span class="pl-smi">UNICODE_STRING</span>            <span class="pl-c1">Altitude</span>;
+  <span class="pl-smi">PVOID</span>                     <span class="pl-c1">RegistrationContext</span>;
+  <span class="pl-smi">OB_OPERATION_REGISTRATION</span> <span class="pl-c1">*</span><span class="pl-c1">OperationRegistration</span>;
+} <span class="pl-smi">OB_CALLBACK_REGISTRATION</span>, <span class="pl-c1">*</span><span class="pl-smi">POB_CALLBACK_REGISTRATION</span>;
 
-typedef struct _OB_OPERATION_REGISTRATION {
-  POBJECT_TYPE                *ObjectType;
-  OB_OPERATION                Operations;
-  POB_PRE_OPERATION_CALLBACK  PreOperation;
-  POB_POST_OPERATION_CALLBACK PostOperation;
-} OB_OPERATION_REGISTRATION, *POB_OPERATION_REGISTRATION;
-</code></pre>
+<span class="pl-k">typedef</span> <span class="pl-k">struct</span> <span class="pl-smi">_OB_OPERATION_REGISTRATION</span> {
+  <span class="pl-smi">POBJECT_TYPE</span>                <span class="pl-c1">*</span><span class="pl-c1">ObjectType</span>;
+  <span class="pl-smi">OB_OPERATION</span>                <span class="pl-c1">Operations</span>;
+  <span class="pl-smi">POB_PRE_OPERATION_CALLBACK</span>  <span class="pl-c1">PreOperation</span>;
+  <span class="pl-smi">POB_POST_OPERATION_CALLBACK</span> <span class="pl-c1">PostOperation</span>;
+} <span class="pl-smi">OB_OPERATION_REGISTRATION</span>, <span class="pl-c1">*</span><span class="pl-smi">POB_OPERATION_REGISTRATION</span>;</pre></div>
 <h2>其他函数</h2>
-<pre lang="c" class="notranslate"><code class="notranslate">// 返回进程的ID
-HANDLE PsGetProcessId(_In_ PEPROCESS Process);
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 返回进程的ID</span>
+<span class="pl-smi">HANDLE</span> <span class="pl-en">PsGetProcessId</span>(<span class="pl-smi">_In_</span> <span class="pl-c1">PEPROCESS</span> <span class="pl-s1">Process</span>);
 
-// 返回具有指定线程的进程
-PEPROCESS IoThreadToProcess(_In_ PETHREAD Thread);
-</code></pre>
+<span class="pl-c">// 返回具有指定线程的进程</span>
+<span class="pl-smi">PEPROCESS</span> <span class="pl-en">IoThreadToProcess</span>(<span class="pl-smi">_In_</span> <span class="pl-c1">PETHREAD</span> <span class="pl-s1">Thread</span>);</pre></div>
 <h1>通过限制</h1>
 <p>使用此函数的内核驱动程序必须具有合法签名，但有一些方式可以绕过。</p>
 <h2>方法一</h2>
 <p>通过分析，Windows使用<code class="notranslate">MmVerifyCallbackFunction</code>检验回调。<br>
 此方法只是检查</p>
-<pre lang="c" class="notranslate"><code class="notranslate">if (DriverObject-&gt;Driversection-&gt;Flags ＆ 0x20)
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">if</span> (<span class="pl-s1">DriverObject</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Driversection</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Flags</span> ＆ <span class="pl-c1">0x20</span>)</pre></div>
 <pre class="notranslate"><code class="notranslate">nt!MmVerifyCallbackFunction+0x75: 
 fffff800`01a66865 f6406820   test    byte ptr [rax+68h],20h 
 fffff800`01a66869 0f45fd     cmovne  edi,ebp
 </code></pre>
 <p><code class="notranslate">DriverSection</code>是指向<code class="notranslate">LDR_DATA_TABLE_ENTRY</code>的指针</p>
-<pre lang="c" class="notranslate"><code class="notranslate">typedef struct _LDR_DATA_TABLE_ENTRY {
-    LIST_ENTRY InLoadOrderLinks;
-    LIST_ENTRY InMemoryOrderLinks;
-    LIST_ENTRY InInitializationOrderLinks;
-    PVOID DllBase;
-    PVOID EntryPoint;
-    ULONG SizeOfImage;
-    UNICODE_STRING FullDllName;
-    UNICODE_STRING BaseDllName;
-    ULONG Flags;
-    USHORT LoadCount;
-    USHORT TlsIndex;
-    union {
-        LIST_ENTRY HashLinks;
-        struct {
-            PVOID SectionPointer;
-            ULONG CheckSum;
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">typedef</span> <span class="pl-k">struct</span> <span class="pl-smi">_LDR_DATA_TABLE_ENTRY</span> {
+    <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">InLoadOrderLinks</span>;
+    <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">InMemoryOrderLinks</span>;
+    <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">InInitializationOrderLinks</span>;
+    <span class="pl-smi">PVOID</span> <span class="pl-c1">DllBase</span>;
+    <span class="pl-smi">PVOID</span> <span class="pl-c1">EntryPoint</span>;
+    <span class="pl-smi">ULONG</span> <span class="pl-c1">SizeOfImage</span>;
+    <span class="pl-smi">UNICODE_STRING</span> <span class="pl-c1">FullDllName</span>;
+    <span class="pl-smi">UNICODE_STRING</span> <span class="pl-c1">BaseDllName</span>;
+    <span class="pl-smi">ULONG</span> <span class="pl-c1">Flags</span>;
+    <span class="pl-smi">USHORT</span> <span class="pl-c1">LoadCount</span>;
+    <span class="pl-smi">USHORT</span> <span class="pl-c1">TlsIndex</span>;
+    <span class="pl-k">union</span> {
+        <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">HashLinks</span>;
+        <span class="pl-k">struct</span> {
+            <span class="pl-smi">PVOID</span> <span class="pl-c1">SectionPointer</span>;
+            <span class="pl-smi">ULONG</span> <span class="pl-c1">CheckSum</span>;
         };
     };
-    union {
-        ULONG TimeDateStamp;
-        PVOID LoadedImports;
+    <span class="pl-k">union</span> {
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">TimeDateStamp</span>;
+        <span class="pl-smi">PVOID</span> <span class="pl-c1">LoadedImports</span>;
     };
-    PVOID EntryPointActivationContext;
-    PVOID PatchInformation;
-    LIST_ENTRY ForwarderLinks;
-    LIST_ENTRY ServiceTagLinks;
-    LIST_ENTRY StaticLinks;
-} LDR_DATA_TABLE_ENTRY, * PLDR_DATA_TABLE_ENTRY;
-</code></pre>
+    <span class="pl-smi">PVOID</span> <span class="pl-c1">EntryPointActivationContext</span>;
+    <span class="pl-smi">PVOID</span> <span class="pl-c1">PatchInformation</span>;
+    <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">ForwarderLinks</span>;
+    <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">ServiceTagLinks</span>;
+    <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">StaticLinks</span>;
+} <span class="pl-smi">LDR_DATA_TABLE_ENTRY</span>, <span class="pl-c1">*</span> <span class="pl-smi">PLDR_DATA_TABLE_ENTRY</span>;</pre></div>
 <details>
 <summary>使用如下代码：</summary>
-<pre lang="c" class="notranslate"><code class="notranslate">BOOLEAN BypassCheckSign(PDRIVER_OBJECT pDriverObject) {
-    #ifdef _WIN64
-    typedef struct _KLDR_DATA_TABLE_ENTRY {
-        LIST_ENTRY listEntry;
-        ULONG64 __Undefined1;
-        ULONG64 __Undefined2;
-        ULONG64 __Undefined3;
-        ULONG64 NonPagedDebugInfo;
-        ULONG64 DllBase;
-        ULONG64 EntryPoint;
-        ULONG SizeOfImage;
-        UNICODE_STRING path;
-        UNICODE_STRING name;
-        ULONG Flags;
-        USHORT LoadCount;
-        USHORT __Undefined5;
-        ULONG64 __Undefined6;
-        ULONG CheckSum;
-        ULONG __padding1;
-        ULONG TimeDateStamp;
-        ULONG __padding2;
-    }    KLDR_DATA_TABLE_ENTRY, * PKLDR_DATA_TABLE_ENTRY;
-    #else
-    typedef struct _KLDR_DATA_TABLE_ENTRY {
-        LIST_ENTRY listEntry;
-        ULONG unknown1;
-        ULONG unknown2;
-        ULONG unknown3;
-        ULONG unknown4;
-        ULONG unknown5;
-        ULONG unknown6;
-        ULONG unknown7;
-        UNICODE_STRING path;
-        UNICODE_STRING name;
-        ULONG Flags;
-    }    KLDR_DATA_TABLE_ENTRY, * PKLDR_DATA_TABLE_ENTRY;
-    #endif
-    PKLDR_DATA_TABLE_ENTRY pLdrData = (PKLDR_DATA_TABLE_ENTRY) pDriverObject-&gt;DriverSection;
-    pLdrData-&gt;Flags = pLdrData-&gt;Flags | 0x20;
-    return (TRUE);
-}
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">BOOLEAN</span> <span class="pl-en">BypassCheckSign</span>(<span class="pl-smi">PDRIVER_OBJECT</span> <span class="pl-s1">pDriverObject</span>) {
+    <span class="pl-k">#ifdef</span> <span class="pl-s1">_WIN64</span>
+    <span class="pl-k">typedef</span> <span class="pl-k">struct</span> <span class="pl-smi">_KLDR_DATA_TABLE_ENTRY</span> {
+        <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">listEntry</span>;
+        <span class="pl-smi">ULONG64</span> <span class="pl-c1">__Undefined1</span>;
+        <span class="pl-smi">ULONG64</span> <span class="pl-c1">__Undefined2</span>;
+        <span class="pl-smi">ULONG64</span> <span class="pl-c1">__Undefined3</span>;
+        <span class="pl-smi">ULONG64</span> <span class="pl-c1">NonPagedDebugInfo</span>;
+        <span class="pl-smi">ULONG64</span> <span class="pl-c1">DllBase</span>;
+        <span class="pl-smi">ULONG64</span> <span class="pl-c1">EntryPoint</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">SizeOfImage</span>;
+        <span class="pl-smi">UNICODE_STRING</span> <span class="pl-c1">path</span>;
+        <span class="pl-smi">UNICODE_STRING</span> <span class="pl-c1">name</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">Flags</span>;
+        <span class="pl-smi">USHORT</span> <span class="pl-c1">LoadCount</span>;
+        <span class="pl-smi">USHORT</span> <span class="pl-c1">__Undefined5</span>;
+        <span class="pl-smi">ULONG64</span> <span class="pl-c1">__Undefined6</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">CheckSum</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">__padding1</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">TimeDateStamp</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">__padding2</span>;
+    }    <span class="pl-smi">KLDR_DATA_TABLE_ENTRY</span>, <span class="pl-c1">*</span> <span class="pl-smi">PKLDR_DATA_TABLE_ENTRY</span>;
+    <span class="pl-k">#else</span>
+    <span class="pl-k">typedef</span> <span class="pl-k">struct</span> <span class="pl-smi">_KLDR_DATA_TABLE_ENTRY</span> {
+        <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">listEntry</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">unknown1</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">unknown2</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">unknown3</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">unknown4</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">unknown5</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">unknown6</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">unknown7</span>;
+        <span class="pl-smi">UNICODE_STRING</span> <span class="pl-c1">path</span>;
+        <span class="pl-smi">UNICODE_STRING</span> <span class="pl-c1">name</span>;
+        <span class="pl-smi">ULONG</span> <span class="pl-c1">Flags</span>;
+    }    <span class="pl-smi">KLDR_DATA_TABLE_ENTRY</span>, <span class="pl-c1">*</span> <span class="pl-smi">PKLDR_DATA_TABLE_ENTRY</span>;
+    <span class="pl-k">#endif</span>
+    <span class="pl-smi">PKLDR_DATA_TABLE_ENTRY</span> <span class="pl-s1">pLdrData</span> <span class="pl-c1">=</span> (<span class="pl-smi">PKLDR_DATA_TABLE_ENTRY</span>) <span class="pl-s1">pDriverObject</span><span class="pl-c1">-&gt;</span><span class="pl-c1">DriverSection</span>;
+    <span class="pl-s1">pLdrData</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Flags</span> <span class="pl-c1">=</span> <span class="pl-s1">pLdrData</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Flags</span> | <span class="pl-c1">0x20</span>;
+    <span class="pl-k">return</span> (TRUE);
+}</pre></div>
 </details>
 <h2>方法二</h2>
 <p>为了使用此方法，PE头中的<code class="notranslate">IMAGE_OPTIONAL_HEADER.DllCharacterisitics</code>应该具有<code class="notranslate">IMAGE_DLLCHARACTERISITICS_FORCE_INTEGRITY </code>属性<br>
@@ -217,136 +211,135 @@ fffff800`01a66869 0f45fd     cmovne  edi,ebp
 <h1>使用示例</h1>
 <details>
 <summary>查看</summary>
-<pre lang="c" class="notranslate"><code class="notranslate">/* 注册回调 */
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">/* 注册回调 */</span>
 
-NTSTATUS SetProcessCallbacks()
+<span class="pl-smi">NTSTATUS</span> <span class="pl-en">SetProcessCallbacks</span>()
 {
-	NTSTATUS			status		= STATUS_SUCCESS;
-	OB_CALLBACK_REGISTRATION	obCallbackReg	= { 0 };
-	OB_OPERATION_REGISTRATION	obOperationReg	= { 0 };
-	RtlZeroMemory( &amp;obCallbackReg, sizeof(OB_CALLBACK_REGISTRATION) );
-	RtlZeroMemory( &amp;obOperationReg, sizeof(OB_OPERATION_REGISTRATION) );
-	/* set OB_CALLBACK_REGISTRATION */
-	obCallbackReg.Version				= ObGetFilterVersion();
-	obCallbackReg.OperationRegistrationCount	= 1;
-	obCallbackReg.RegistrationContext		= NULL;
-	RtlInitUnicodeString( &amp;obCallbackReg.Altitude, L"321000" );
-	obCallbackReg.OperationRegistration = &amp;obOperationReg;
-	/*
-	 * set OB_OPERATION_REGISTRATION
-	 * difference between Thread and Process
-	 */
-	obOperationReg.ObjectType	= PsProcessType;
-	obOperationReg.Operations	= OB_OPERATION_HANDLE_CREATE | OB_OPERATION_HANDLE_DUPLICATE;
-	/* difference between Thread and Process */
-	obOperationReg.PreOperation = (POB_PRE_OPERATION_CALLBACK) (&amp;ProcessPreCall);
-	/* 注册回调函数 */
-	status = ObRegisterCallbacks( &amp;obCallbackReg, &amp;g_obProcessHandle );
-	if ( !NT_SUCCESS( status ) )
+	<span class="pl-smi">NTSTATUS</span>			<span class="pl-s1">status</span>		<span class="pl-c1">=</span> <span class="pl-c1">STATUS_SUCCESS</span>;
+	<span class="pl-smi">OB_CALLBACK_REGISTRATION</span>	<span class="pl-s1">obCallbackReg</span>	<span class="pl-c1">=</span> { <span class="pl-c1">0</span> };
+	<span class="pl-smi">OB_OPERATION_REGISTRATION</span>	<span class="pl-s1">obOperationReg</span>	<span class="pl-c1">=</span> { <span class="pl-c1">0</span> };
+	<span class="pl-en">RtlZeroMemory</span>( <span class="pl-c1">&amp;</span><span class="pl-s1">obCallbackReg</span>, <span class="pl-k">sizeof</span>(<span class="pl-c1">OB_CALLBACK_REGISTRATION</span>) );
+	<span class="pl-en">RtlZeroMemory</span>( <span class="pl-c1">&amp;</span><span class="pl-s1">obOperationReg</span>, <span class="pl-k">sizeof</span>(<span class="pl-c1">OB_OPERATION_REGISTRATION</span>) );
+	<span class="pl-c">/* set OB_CALLBACK_REGISTRATION */</span>
+	<span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">Version</span>				<span class="pl-c1">=</span> <span class="pl-en">ObGetFilterVersion</span>();
+	<span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">OperationRegistrationCount</span>	<span class="pl-c1">=</span> <span class="pl-c1">1</span>;
+	<span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">RegistrationContext</span>		<span class="pl-c1">=</span> <span class="pl-c1">NULL</span>;
+	<span class="pl-en">RtlInitUnicodeString</span>( <span class="pl-c1">&amp;</span><span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">Altitude</span>, <span class="pl-s">L"321000"</span> );
+	<span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">OperationRegistration</span> <span class="pl-c1">=</span> <span class="pl-c1">&amp;</span><span class="pl-s1">obOperationReg</span>;
+	<span class="pl-c">/*</span>
+<span class="pl-c">	 * set OB_OPERATION_REGISTRATION</span>
+<span class="pl-c">	 * difference between Thread and Process</span>
+<span class="pl-c">	 */</span>
+	<span class="pl-s1">obOperationReg</span>.<span class="pl-c1">ObjectType</span>	<span class="pl-c1">=</span> <span class="pl-s1">PsProcessType</span>;
+	<span class="pl-s1">obOperationReg</span>.<span class="pl-c1">Operations</span>	<span class="pl-c1">=</span> <span class="pl-c1">OB_OPERATION_HANDLE_CREATE</span> | <span class="pl-c1">OB_OPERATION_HANDLE_DUPLICATE</span>;
+	<span class="pl-c">/* difference between Thread and Process */</span>
+	<span class="pl-s1">obOperationReg</span>.<span class="pl-c1">PreOperation</span> <span class="pl-c1">=</span> (<span class="pl-c1">POB_PRE_OPERATION_CALLBACK</span>) (<span class="pl-c1">&amp;</span><span class="pl-s1">ProcessPreCall</span>);
+	<span class="pl-c">/* 注册回调函数 */</span>
+	<span class="pl-s1">status</span> <span class="pl-c1">=</span> <span class="pl-en">ObRegisterCallbacks</span>( <span class="pl-c1">&amp;</span><span class="pl-s1">obCallbackReg</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">g_obProcessHandle</span> );
+	<span class="pl-k">if</span> ( !<span class="pl-en">NT_SUCCESS</span>( <span class="pl-s1">status</span> ) )
 	{
-		DbgPrint( "ObRegisterCallbacks Error[0x%X]\n", status );
-		return(status);
+		<span class="pl-en">DbgPrint</span>( <span class="pl-s">"ObRegisterCallbacks Error[0x%X]\n"</span>, <span class="pl-s1">status</span> );
+		<span class="pl-k">return</span>(<span class="pl-s1">status</span>);
 	}
-	return(status);
+	<span class="pl-k">return</span>(<span class="pl-s1">status</span>);
 }
 
-NTSTATUS SetThreadCallbacks()
+<span class="pl-smi">NTSTATUS</span> <span class="pl-en">SetThreadCallbacks</span>()
 {
-	NTSTATUS			status		= STATUS_SUCCESS;
-	OB_CALLBACK_REGISTRATION	obCallbackReg	= { 0 };
-	OB_OPERATION_REGISTRATION	obOperationReg	= { 0 };
-	RtlZeroMemory( &amp;obCallbackReg, sizeof(OB_CALLBACK_REGISTRATION) );
-	RtlZeroMemory( &amp;obOperationReg, sizeof(OB_OPERATION_REGISTRATION) );
-	/* set OB_CALLBACK_REGISTRATION */
-	obCallbackReg.Version				= ObGetFilterVersion();
-	obCallbackReg.OperationRegistrationCount	= 1;
-	obCallbackReg.RegistrationContext		= NULL;
-	RtlInitUnicodeString( &amp;obCallbackReg.Altitude, L"321001" );
-	obCallbackReg.OperationRegistration = &amp;obOperationReg;
-	/*
-	 * set OB_OPERATION_REGISTRATION
-	 * difference between Thread and Process
-	 */
-	obOperationReg.ObjectType	= PsThreadType;
-	obOperationReg.Operations	= OB_OPERATION_HANDLE_CREATE | OB_OPERATION_HANDLE_DUPLICATE;
-	/* difference between Thread and Process */
-	obOperationReg.PreOperation = (POB_PRE_OPERATION_CALLBACK) (&amp;ThreadPreCall);
-	/* regist call back */
-	status = ObRegisterCallbacks( &amp;obCallbackReg, &amp;g_obThreadHandle );
-	if ( !NT_SUCCESS( status ) )
+	<span class="pl-smi">NTSTATUS</span>			<span class="pl-s1">status</span>		<span class="pl-c1">=</span> <span class="pl-c1">STATUS_SUCCESS</span>;
+	<span class="pl-smi">OB_CALLBACK_REGISTRATION</span>	<span class="pl-s1">obCallbackReg</span>	<span class="pl-c1">=</span> { <span class="pl-c1">0</span> };
+	<span class="pl-smi">OB_OPERATION_REGISTRATION</span>	<span class="pl-s1">obOperationReg</span>	<span class="pl-c1">=</span> { <span class="pl-c1">0</span> };
+	<span class="pl-en">RtlZeroMemory</span>( <span class="pl-c1">&amp;</span><span class="pl-s1">obCallbackReg</span>, <span class="pl-k">sizeof</span>(<span class="pl-c1">OB_CALLBACK_REGISTRATION</span>) );
+	<span class="pl-en">RtlZeroMemory</span>( <span class="pl-c1">&amp;</span><span class="pl-s1">obOperationReg</span>, <span class="pl-k">sizeof</span>(<span class="pl-c1">OB_OPERATION_REGISTRATION</span>) );
+	<span class="pl-c">/* set OB_CALLBACK_REGISTRATION */</span>
+	<span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">Version</span>				<span class="pl-c1">=</span> <span class="pl-en">ObGetFilterVersion</span>();
+	<span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">OperationRegistrationCount</span>	<span class="pl-c1">=</span> <span class="pl-c1">1</span>;
+	<span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">RegistrationContext</span>		<span class="pl-c1">=</span> <span class="pl-c1">NULL</span>;
+	<span class="pl-en">RtlInitUnicodeString</span>( <span class="pl-c1">&amp;</span><span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">Altitude</span>, <span class="pl-s">L"321001"</span> );
+	<span class="pl-s1">obCallbackReg</span>.<span class="pl-c1">OperationRegistration</span> <span class="pl-c1">=</span> <span class="pl-c1">&amp;</span><span class="pl-s1">obOperationReg</span>;
+	<span class="pl-c">/*</span>
+<span class="pl-c">	 * set OB_OPERATION_REGISTRATION</span>
+<span class="pl-c">	 * difference between Thread and Process</span>
+<span class="pl-c">	 */</span>
+	<span class="pl-s1">obOperationReg</span>.<span class="pl-c1">ObjectType</span>	<span class="pl-c1">=</span> <span class="pl-s1">PsThreadType</span>;
+	<span class="pl-s1">obOperationReg</span>.<span class="pl-c1">Operations</span>	<span class="pl-c1">=</span> <span class="pl-c1">OB_OPERATION_HANDLE_CREATE</span> | <span class="pl-c1">OB_OPERATION_HANDLE_DUPLICATE</span>;
+	<span class="pl-c">/* difference between Thread and Process */</span>
+	<span class="pl-s1">obOperationReg</span>.<span class="pl-c1">PreOperation</span> <span class="pl-c1">=</span> (<span class="pl-c1">POB_PRE_OPERATION_CALLBACK</span>) (<span class="pl-c1">&amp;</span><span class="pl-s1">ThreadPreCall</span>);
+	<span class="pl-c">/* regist call back */</span>
+	<span class="pl-s1">status</span> <span class="pl-c1">=</span> <span class="pl-en">ObRegisterCallbacks</span>( <span class="pl-c1">&amp;</span><span class="pl-s1">obCallbackReg</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">g_obThreadHandle</span> );
+	<span class="pl-k">if</span> ( !<span class="pl-en">NT_SUCCESS</span>( <span class="pl-s1">status</span> ) )
 	{
-		DbgPrint( "ObRegisterCallbacks Error[0x%X]\n", status );
-		return(status);
+		<span class="pl-en">DbgPrint</span>( <span class="pl-s">"ObRegisterCallbacks Error[0x%X]\n"</span>, <span class="pl-s1">status</span> );
+		<span class="pl-k">return</span>(<span class="pl-s1">status</span>);
 	}
-	return(status);
+	<span class="pl-k">return</span>(<span class="pl-s1">status</span>);
 }
 
-OB_PREOP_CALLBACK_STATUS ThreadPreCall( PVOID RegistrationContext, POB_PRE_OPERATION_INFORMATION pObPreOperationInfo )
+<span class="pl-smi">OB_PREOP_CALLBACK_STATUS</span> <span class="pl-en">ThreadPreCall</span>( <span class="pl-smi">PVOID</span> <span class="pl-s1">RegistrationContext</span>, <span class="pl-smi">POB_PRE_OPERATION_INFORMATION</span> <span class="pl-s1">pObPreOperationInfo</span> )
 {
-	PEPROCESS pEProcess = NULL;
-	/* check object type */
-	if ( *PsThreadType != pObPreOperationInfo-&gt;ObjectType )
+	<span class="pl-smi">PEPROCESS</span> <span class="pl-s1">pEProcess</span> <span class="pl-c1">=</span> <span class="pl-c1">NULL</span>;
+	<span class="pl-c">/* check object type */</span>
+	<span class="pl-k">if</span> ( <span class="pl-c1">*</span><span class="pl-s1">PsThreadType</span> <span class="pl-c1">!=</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">ObjectType</span> )
 	{
-		return(OB_PREOP_SUCCESS);
+		<span class="pl-k">return</span>(<span class="pl-c1">OB_PREOP_SUCCESS</span>);
 	}
-	/* get thread owner PEPROCESS */
-	pEProcess = IoThreadToProcess( (PETHREAD) pObPreOperationInfo-&gt;Object );
-	/* check if PID should be protected */
-	if ( IsProtectProcess( pEProcess ) )
+	<span class="pl-c">/* get thread owner PEPROCESS */</span>
+	<span class="pl-s1">pEProcess</span> <span class="pl-c1">=</span> <span class="pl-en">IoThreadToProcess</span>( (<span class="pl-smi">PETHREAD</span>) <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Object</span> );
+	<span class="pl-c">/* check if PID should be protected */</span>
+	<span class="pl-k">if</span> ( <span class="pl-en">IsProtectProcess</span>( <span class="pl-s1">pEProcess</span> ) )
 	{
-		/* operation type: create handle */
-		if ( OB_OPERATION_HANDLE_CREATE == pObPreOperationInfo-&gt;Operation )
+		<span class="pl-c">/* operation type: create handle */</span>
+		<span class="pl-k">if</span> ( <span class="pl-c1">OB_OPERATION_HANDLE_CREATE</span> <span class="pl-c1">==</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Operation</span> )
 		{
-			if ( 1 == (1 &amp; pObPreOperationInfo-&gt;Parameters-&gt;CreateHandleInformation.OriginalDesiredAccess) )
+			<span class="pl-k">if</span> ( <span class="pl-c1">1</span> <span class="pl-c1">==</span> (<span class="pl-c1">1</span> <span class="pl-c1">&amp;</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Parameters</span><span class="pl-c1">-&gt;</span><span class="pl-c1">CreateHandleInformation</span>.<span class="pl-c1">OriginalDesiredAccess</span>) )
 			{
-				pObPreOperationInfo-&gt;Parameters-&gt;CreateHandleInformation.DesiredAccess = 0;
+				<span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Parameters</span><span class="pl-c1">-&gt;</span><span class="pl-c1">CreateHandleInformation</span>.<span class="pl-c1">DesiredAccess</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span>;
 			}
 		}
-		/* operation type: duplicate handle */
-		else if ( OB_OPERATION_HANDLE_DUPLICATE == pObPreOperationInfo-&gt;Operation )
+		<span class="pl-c">/* operation type: duplicate handle */</span>
+		<span class="pl-k">else</span> <span class="pl-k">if</span> ( <span class="pl-c1">OB_OPERATION_HANDLE_DUPLICATE</span> <span class="pl-c1">==</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Operation</span> )
 		{
-			if ( 1 == (1 &amp; pObPreOperationInfo-&gt;Parameters-&gt;DuplicateHandleInformation.OriginalDesiredAccess) )
+			<span class="pl-k">if</span> ( <span class="pl-c1">1</span> <span class="pl-c1">==</span> (<span class="pl-c1">1</span> <span class="pl-c1">&amp;</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Parameters</span><span class="pl-c1">-&gt;</span><span class="pl-c1">DuplicateHandleInformation</span>.<span class="pl-c1">OriginalDesiredAccess</span>) )
 			{
-				pObPreOperationInfo-&gt;Parameters-&gt;DuplicateHandleInformation.DesiredAccess = 0;
-			}
-		}
-	}
-	return(OB_PREOP_SUCCESS);
-}
-
-OB_PREOP_CALLBACK_STATUS ProcessPreCall( PVOID RegistrationContext, POB_PRE_OPERATION_INFORMATION pObPreOperationInfo )
-{
-	PEPROCESS pEProcess = NULL;
-	/* check object type */
-	if ( *PsProcessType != pObPreOperationInfo-&gt;ObjectType )
-	{
-		return(OB_PREOP_SUCCESS);
-	}
-	/* get process object */
-	pEProcess = (PEPROCESS) pObPreOperationInfo-&gt;Object;
-	/* check if PID should be protected */
-	if ( IsProtectProcess( pEProcess ) )
-	{
-		/* operation type: create handle */
-		if ( OB_OPERATION_HANDLE_CREATE == pObPreOperationInfo-&gt;Operation )
-		{
-			if ( 1 == (1 &amp; pObPreOperationInfo-&gt;Parameters-&gt;CreateHandleInformation.OriginalDesiredAccess) )
-			{
-				pObPreOperationInfo-&gt;Parameters-&gt;CreateHandleInformation.DesiredAccess = 0;
-			}
-		}
-		/* operation type: duplicate handle */
-		else if ( OB_OPERATION_HANDLE_DUPLICATE == pObPreOperationInfo-&gt;Operation )
-		{
-			if ( 1 == (1 &amp; pObPreOperationInfo-&gt;Parameters-&gt;DuplicateHandleInformation.OriginalDesiredAccess) )
-			{
-				pObPreOperationInfo-&gt;Parameters-&gt;DuplicateHandleInformation.DesiredAccess = 0;
+				<span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Parameters</span><span class="pl-c1">-&gt;</span><span class="pl-c1">DuplicateHandleInformation</span>.<span class="pl-c1">DesiredAccess</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span>;
 			}
 		}
 	}
-	return(OB_PREOP_SUCCESS);
+	<span class="pl-k">return</span>(<span class="pl-c1">OB_PREOP_SUCCESS</span>);
 }
-</code></pre>
+
+<span class="pl-smi">OB_PREOP_CALLBACK_STATUS</span> <span class="pl-en">ProcessPreCall</span>( <span class="pl-smi">PVOID</span> <span class="pl-s1">RegistrationContext</span>, <span class="pl-smi">POB_PRE_OPERATION_INFORMATION</span> <span class="pl-s1">pObPreOperationInfo</span> )
+{
+	<span class="pl-smi">PEPROCESS</span> <span class="pl-s1">pEProcess</span> <span class="pl-c1">=</span> <span class="pl-c1">NULL</span>;
+	<span class="pl-c">/* check object type */</span>
+	<span class="pl-k">if</span> ( <span class="pl-c1">*</span><span class="pl-s1">PsProcessType</span> <span class="pl-c1">!=</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">ObjectType</span> )
+	{
+		<span class="pl-k">return</span>(<span class="pl-c1">OB_PREOP_SUCCESS</span>);
+	}
+	<span class="pl-c">/* get process object */</span>
+	<span class="pl-s1">pEProcess</span> <span class="pl-c1">=</span> (<span class="pl-smi">PEPROCESS</span>) <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Object</span>;
+	<span class="pl-c">/* check if PID should be protected */</span>
+	<span class="pl-k">if</span> ( <span class="pl-en">IsProtectProcess</span>( <span class="pl-s1">pEProcess</span> ) )
+	{
+		<span class="pl-c">/* operation type: create handle */</span>
+		<span class="pl-k">if</span> ( <span class="pl-c1">OB_OPERATION_HANDLE_CREATE</span> <span class="pl-c1">==</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Operation</span> )
+		{
+			<span class="pl-k">if</span> ( <span class="pl-c1">1</span> <span class="pl-c1">==</span> (<span class="pl-c1">1</span> <span class="pl-c1">&amp;</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Parameters</span><span class="pl-c1">-&gt;</span><span class="pl-c1">CreateHandleInformation</span>.<span class="pl-c1">OriginalDesiredAccess</span>) )
+			{
+				<span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Parameters</span><span class="pl-c1">-&gt;</span><span class="pl-c1">CreateHandleInformation</span>.<span class="pl-c1">DesiredAccess</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span>;
+			}
+		}
+		<span class="pl-c">/* operation type: duplicate handle */</span>
+		<span class="pl-k">else</span> <span class="pl-k">if</span> ( <span class="pl-c1">OB_OPERATION_HANDLE_DUPLICATE</span> <span class="pl-c1">==</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Operation</span> )
+		{
+			<span class="pl-k">if</span> ( <span class="pl-c1">1</span> <span class="pl-c1">==</span> (<span class="pl-c1">1</span> <span class="pl-c1">&amp;</span> <span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Parameters</span><span class="pl-c1">-&gt;</span><span class="pl-c1">DuplicateHandleInformation</span>.<span class="pl-c1">OriginalDesiredAccess</span>) )
+			{
+				<span class="pl-s1">pObPreOperationInfo</span><span class="pl-c1">-&gt;</span><span class="pl-c1">Parameters</span><span class="pl-c1">-&gt;</span><span class="pl-c1">DuplicateHandleInformation</span>.<span class="pl-c1">DesiredAccess</span> <span class="pl-c1">=</span> <span class="pl-c1">0</span>;
+			}
+		}
+	}
+	<span class="pl-k">return</span>(<span class="pl-c1">OB_PREOP_SUCCESS</span>);
+}</pre></div>
 </details>
 <h1>绕过</h1>
 <h2>多种方法</h2>
@@ -359,12 +352,11 @@ OB_PREOP_CALLBACK_STATUS ProcessPreCall( PVOID RegistrationContext, POB_PRE_OPER
 </ol>
 <p>关于第5条：操作系统维护了一个列表，此列表包含所有已注册的回调信息，如函数指针，修改它可以绕过。<br>
 列表的表头在<code class="notranslate">OBJECT_TYPE</code>的结构体中：</p>
-<pre lang="c" class="notranslate"><code class="notranslate">typedef struct OBJECT_TYPE {
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-k">typedef</span> <span class="pl-k">struct</span> <span class="pl-smi">OBJECT_TYPE</span> {
     ...
-    PLIST_ENTRY64 header;
+    <span class="pl-smi">PLIST_ENTRY64</span> <span class="pl-c1">header</span>;
     ...
-}
-</code></pre>
+}</pre></div>
 <p>在WinDBG中有：</p>
 <pre class="notranslate"><code class="notranslate">kd&gt; dt nt!_OBJECT_TYPE
 +0x000 TypeList         : _LIST_ENTRY [ 0xffffcb82`dee6cf20 - 0xffffcb82`dee6cf20 ]
@@ -381,16 +373,15 @@ OB_PREOP_CALLBACK_STATUS ProcessPreCall( PVOID RegistrationContext, POB_PRE_OPER
 +0x0c8 CallbackList     : _LIST_ENTRY [ 0xffffa002`d31bacd0 - 0xffffa002`d35d2450 ]
 </code></pre>
 <p><code class="notranslate">CallbackList</code>有以下结构：</p>
-<pre lang="c" class="notranslate"><code class="notranslate"> typedef struct _CALLBACK_ENTRY_ITEM {
-     LIST_ENTRY EntryItemList;
-     OB_OPERATION Operations;
-     CALLBACK_ENTRY * CallbackEntry;
-     POBJECT_TYPE ObjectType;
-     POB_PRE_OPERATION_CALLBACK PreOperation;
-     POB_POST_OPERATION_CALLBACK PostOperation;
-     __int64 unk;
- } CALLBACK_ENTRY_ITEM, * PCALLBACK_ENTRY_ITEM;
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"> <span class="pl-k">typedef</span> <span class="pl-k">struct</span> <span class="pl-smi">_CALLBACK_ENTRY_ITEM</span> {
+     <span class="pl-smi">LIST_ENTRY</span> <span class="pl-c1">EntryItemList</span>;
+     <span class="pl-smi">OB_OPERATION</span> <span class="pl-c1">Operations</span>;
+     <span class="pl-smi">CALLBACK_ENTRY</span> <span class="pl-c1">*</span> <span class="pl-c1">CallbackEntry</span>;
+     <span class="pl-smi">POBJECT_TYPE</span> <span class="pl-c1">ObjectType</span>;
+     <span class="pl-smi">POB_PRE_OPERATION_CALLBACK</span> <span class="pl-c1">PreOperation</span>;
+     <span class="pl-smi">POB_POST_OPERATION_CALLBACK</span> <span class="pl-c1">PostOperation</span>;
+     <span class="pl-smi">__int64</span> <span class="pl-c1">unk</span>;
+ } <span class="pl-smi">CALLBACK_ENTRY_ITEM</span>, <span class="pl-c1">*</span> <span class="pl-smi">PCALLBACK_ENTRY_ITEM</span>;</pre></div>
 <p>符号<code class="notranslate">PsProcessType</code>和<code class="notranslate">PsthreadType</code>已导出，通过偏移可以获取列表头（注：指针指向表头的内部成员而非头部）<br>
 该成员的偏移尚未固定，在不同版本的系统中可能有所不同。</p></div>
 <div style="font-size:small;margin-top:8px;float:right;"></div>
