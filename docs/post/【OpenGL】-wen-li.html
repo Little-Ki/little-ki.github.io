@@ -17,7 +17,7 @@
 <meta property="og:url" content="https://little-ki.github.io/post/%E3%80%90OpenGL%E3%80%91-wen-li.html">
 <meta property="og:image" content="https://github.githubassets.com/favicons/favicon.svg">
 <title>【OpenGL】纹理</title>
-
+<link href="//unpkg.com/@wooorm/starry-night@2.1.1/style/both.css" rel="stylesheet" />
 
 
 </head>
@@ -41,7 +41,17 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
     body {padding: 8px;}
     .postTitle{font-size:24px;}
 }
-
+.copy-feedback {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    color: var(--color-fg-on-emphasis);
+    background-color: var(--color-fg-muted);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
 </style>
 
 
@@ -77,43 +87,42 @@ body{box-sizing: border-box;min-width: 200px;max-width: 900px;margin: 20px auto;
 <p>纹理可以是1D / 2D / 3D 以及立方体贴图，用来添加物体的细节。</p>
 </blockquote>
 <h1>API</h1>
-<pre lang="c" class="notranslate"><code class="notranslate">// 生成纹理 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenTextures.xhtml)
-void glGenTextures(GLsizei n, GLuint * textures);
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 生成纹理 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenTextures.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGenTextures</span>(<span class="pl-smi">GLsizei</span> <span class="pl-s1">n</span>, <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span> <span class="pl-s1">textures</span>);
 
-// 绑定纹理 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindTexture.xhtml)
-void glBindTexture(GLenum target, GLuint texture);
+<span class="pl-c">// 绑定纹理 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glBindTexture.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glBindTexture</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLuint</span> <span class="pl-s1">texture</span>);
 
-// 上传纹理数据
-// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage1D.xhtml)
-void glTexImage1D(
-	GLenum target, GLint level, GLint internalformat, GLsizei width,
-	GLint border, GLenum format, GLenum type, const void * data);
-// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml)
-void glTexImage2D(
-	GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, 
-	GLint border, GLenum format, GLenum type, const void * data);
-// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage3D.xhtml)
-void glTexImage3D(
-	GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height,
-	GLsizei depth, GLint border, GLenum format, GLenum type, const void * data);
-// 生成mipmap [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenerateMipmap.xhtml)
-void glGenerateMipmap(GLenum target);
-void glGenerateTextureMipmap(GLuint texture);
+<span class="pl-c">// 上传纹理数据</span>
+<span class="pl-c">// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage1D.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glTexImage1D</span>(
+	<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">level</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">internalformat</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">width</span>,
+	<span class="pl-smi">GLint</span> <span class="pl-s1">border</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">format</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>);
+<span class="pl-c">// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage2D.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glTexImage2D</span>(
+	<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">level</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">internalformat</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">width</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">height</span>, 
+	<span class="pl-smi">GLint</span> <span class="pl-s1">border</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">format</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>);
+<span class="pl-c">// [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexImage3D.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glTexImage3D</span>(
+	<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">level</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">internalformat</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">width</span>, <span class="pl-smi">GLsizei</span> <span class="pl-s1">height</span>,
+	<span class="pl-smi">GLsizei</span> <span class="pl-s1">depth</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">border</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">format</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">type</span>, <span class="pl-k">const</span> <span class="pl-smi">void</span> <span class="pl-c1">*</span> <span class="pl-s1">data</span>);
+<span class="pl-c">// 生成mipmap [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glGenerateMipmap.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glGenerateMipmap</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glGenerateTextureMipmap</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">texture</span>);
 
-// 设置纹理参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexParameter.xhtml)
-void glTexParameterf(GLenum target, GLenum pname, GLfloat param);
-void glTexParameteri(GLenum target, GLenum pname, GLint param);
-void glTextureParameterf(GLuint texture, GLenum pname, GLfloat param);
-void glTextureParameteri(GLuint texture, GLenum pname, GLint param);
-void glTexParameterfv(GLenum target, GLenum pname, const GLfloat * params);
-void glTexParameteriv(GLenum target, GLenum pname, const GLint * params);
-void glTexParameterIiv(GLenum target, GLenum pname, const GLint * params);
-void glTexParameterIuiv(GLenum target, GLenum pname, const GLuint * params);
-void glTextureParameterfv(GLuint texture, GLenum pname, const GLfloat *params);
-void glTextureParameteriv(GLuint texture, GLenum pname, const GLint *params);
-void glTextureParameterIiv(GLuint texture, GLenum pname, const GLint *params);
-void glTextureParameterIuiv(GLuint texture, GLenum pname, const GLuint *params);
-</code></pre>
+<span class="pl-c">// 设置纹理参数 [参考](https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexParameter.xhtml)</span>
+<span class="pl-smi">void</span> <span class="pl-en">glTexParameterf</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLfloat</span> <span class="pl-s1">param</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTexParameteri</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">param</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTextureParameterf</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">texture</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLfloat</span> <span class="pl-s1">param</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTextureParameteri</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">texture</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-smi">GLint</span> <span class="pl-s1">param</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTexParameterfv</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-k">const</span> <span class="pl-smi">GLfloat</span> <span class="pl-c1">*</span> <span class="pl-s1">params</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTexParameteriv</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-k">const</span> <span class="pl-smi">GLint</span> <span class="pl-c1">*</span> <span class="pl-s1">params</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTexParameterIiv</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-k">const</span> <span class="pl-smi">GLint</span> <span class="pl-c1">*</span> <span class="pl-s1">params</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTexParameterIuiv</span>(<span class="pl-smi">GLenum</span> <span class="pl-s1">target</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-k">const</span> <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span> <span class="pl-s1">params</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTextureParameterfv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">texture</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-k">const</span> <span class="pl-smi">GLfloat</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTextureParameteriv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">texture</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-k">const</span> <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTextureParameterIiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">texture</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-k">const</span> <span class="pl-smi">GLint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>);
+<span class="pl-smi">void</span> <span class="pl-en">glTextureParameterIuiv</span>(<span class="pl-smi">GLuint</span> <span class="pl-s1">texture</span>, <span class="pl-smi">GLenum</span> <span class="pl-s1">pname</span>, <span class="pl-k">const</span> <span class="pl-smi">GLuint</span> <span class="pl-c1">*</span><span class="pl-s1">params</span>);</pre></div>
 <blockquote>
 <p><a href="https://registry.khronos.org/OpenGL-Refpages/gl4/html/glTexParameter.xhtml" rel="nofollow">参考文档</a></p>
 </blockquote>
@@ -147,24 +156,22 @@ void glTextureParameterIuiv(GLuint texture, GLenum pname, const GLuint *params);
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<pre lang="c" class="notranslate"><code class="notranslate">// 设置各个方向的纹理环绕方式
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_MIRRORED_REPEAT);
-// 若采样方式为 GL_CLAMP_TO_BORDER，可指定颜色值
-float borderColor[] = { 1.0f, 1.0f, 0.0f, 1.0f };
-glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 设置各个方向的纹理环绕方式</span>
+<span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_WRAP_S</span>, <span class="pl-c1">GL_MIRRORED_REPEAT</span>);
+<span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_WRAP_T</span>, <span class="pl-c1">GL_MIRRORED_REPEAT</span>);
+<span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_WRAP_R</span>, <span class="pl-c1">GL_MIRRORED_REPEAT</span>);
+<span class="pl-c">// 若采样方式为 GL_CLAMP_TO_BORDER，可指定颜色值</span>
+<span class="pl-smi">float</span> <span class="pl-s1">borderColor</span>[] <span class="pl-c1">=</span> { <span class="pl-c1">1.0f</span>, <span class="pl-c1">1.0f</span>, <span class="pl-c1">0.0f</span>, <span class="pl-c1">1.0f</span> };
+<span class="pl-en">glTexParameterfv</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_BORDER_COLOR</span>, <span class="pl-s1">borderColor</span>);</pre></div>
 <h1>纹理采样方式</h1>
 <blockquote>
 <p>采样方式决定了如何采样颜色，OpenGL 有多种采样方式，其中最重要的有 GL_NEAREST，GL_LINEAR<br>
 GL_NEAREST：邻近采样，使用离采样点最近的像素点作为颜色值<br>
 GL_LINEAR：线性插值，在采样点及其附近像素点进行插值计算最终颜色</p>
 </blockquote>
-<pre lang="c" class="notranslate"><code class="notranslate">// 设置纹理的采样方式
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 设置纹理的采样方式</span>
+<span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_MIN_FILTER</span>, <span class="pl-c1">GL_NEAREST</span>);
+<span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_MAG_FILTER</span>, <span class="pl-c1">GL_LINEAR</span>);</pre></div>
 <h1>多级渐远纹理（MipMap）</h1>
 <blockquote>
 <p>此方式为单个纹理生成不同大小的纹理图像，并根据顶点距离来决定采样哪一个纹理，用于优化采样速度<br>
@@ -196,34 +203,30 @@ OpenGL 具有函数 glGenerateMipmap 用于自动生成纹理，使用以下参�
 </tr>
 </tbody>
 </table></markdown-accessiblity-table>
-<pre lang="c" class="notranslate"><code class="notranslate">// 设置MipMap的采样方式
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-c">// 设置MipMap的采样方式</span>
+<span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_MIN_FILTER</span>, <span class="pl-c1">GL_LINEAR_MIPMAP_LINEAR</span>);
+<span class="pl-en">glTexParameteri</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">GL_TEXTURE_MAG_FILTER</span>, <span class="pl-c1">GL_LINEAR</span>);</pre></div>
 <h1>生成纹理</h1>
-<pre lang="c" class="notranslate"><code class="notranslate">unsigned int texture; // 储存纹理 ID
-glGenTextures(1, &amp;texture);
-glBindTexture(GL_TEXTURE_2D, texture); // 绑定 2D 纹理到纹理 ID
-// 上传纹理数据 参数为 纹理模板 mipmap级别 颜色格式 图片宽度 图片高度 保留 颜色分量数据格式 指向图片数据的指针
-glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-glGenerateMipmap(GL_TEXTURE_2D);
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-s1">texture</span>; <span class="pl-c">// 储存纹理 ID</span>
+<span class="pl-en">glGenTextures</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">texture</span>);
+<span class="pl-en">glBindTexture</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-s1">texture</span>); <span class="pl-c">// 绑定 2D 纹理到纹理 ID</span>
+<span class="pl-c">// 上传纹理数据 参数为 纹理模板 mipmap级别 颜色格式 图片宽度 图片高度 保留 颜色分量数据格式 指向图片数据的指针</span>
+<span class="pl-en">glTexImage2D</span>(<span class="pl-c1">GL_TEXTURE_2D</span>, <span class="pl-c1">0</span>, <span class="pl-c1">GL_RGB</span>, <span class="pl-s1">width</span>, <span class="pl-s1">height</span>, <span class="pl-c1">0</span>, <span class="pl-c1">GL_RGB</span>, <span class="pl-c1">GL_UNSIGNED_BYTE</span>, <span class="pl-s1">data</span>);
+<span class="pl-en">glGenerateMipmap</span>(<span class="pl-c1">GL_TEXTURE_2D</span>);</pre></div>
 <h1>立方体贴图</h1>
 <blockquote>
 <p>立方体贴图是包含 6 个 2D 纹理的纹理，组成了一个带纹理的立方体，通过以下方式创建：</p>
 </blockquote>
-<pre lang="c" class="notranslate"><code class="notranslate">unsigned int textureID;
-glGenTextures(1, &amp;textureID);
-glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-smi">unsigned <span class="pl-smi">int</span></span> <span class="pl-s1">textureID</span>;
+<span class="pl-en">glGenTextures</span>(<span class="pl-c1">1</span>, <span class="pl-c1">&amp;</span><span class="pl-s1">textureID</span>);
+<span class="pl-en">glBindTexture</span>(<span class="pl-c1">GL_TEXTURE_CUBE_MAP</span>, <span class="pl-s1">textureID</span>);</pre></div>
 <blockquote>
 <p>使用以下方式上传数据：</p>
 </blockquote>
-<pre lang="c" class="notranslate"><code class="notranslate">glTexImage2D(
-  GL_TEXTURE_CUBE_MAP_POSITIVE_X , 
-  0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-);
-</code></pre>
+<div class="highlight highlight-source-c"><pre class="notranslate"><span class="pl-en">glTexImage2D</span>(
+  <span class="pl-c1">GL_TEXTURE_CUBE_MAP_POSITIVE_X</span> , 
+  <span class="pl-c1">0</span>, <span class="pl-c1">GL_RGB</span>, <span class="pl-s1">width</span>, <span class="pl-s1">height</span>, <span class="pl-c1">0</span>, <span class="pl-c1">GL_RGB</span>, <span class="pl-c1">GL_UNSIGNED_BYTE</span>, <span class="pl-s1">data</span>
+);</pre></div>
 <blockquote>
 <p>其中参数一可以是以下值：</p>
 </blockquote>
@@ -285,7 +288,7 @@ if(""!=""){
 </script></div>
 </body>
 <script>
-var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z'};
+var IconList={'sun': 'M8 10.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5zM8 12a4 4 0 100-8 4 4 0 000 8zM8 0a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0V.75A.75.75 0 018 0zm0 13a.75.75 0 01.75.75v1.5a.75.75 0 01-1.5 0v-1.5A.75.75 0 018 13zM2.343 2.343a.75.75 0 011.061 0l1.06 1.061a.75.75 0 01-1.06 1.06l-1.06-1.06a.75.75 0 010-1.06zm9.193 9.193a.75.75 0 011.06 0l1.061 1.06a.75.75 0 01-1.06 1.061l-1.061-1.06a.75.75 0 010-1.061zM16 8a.75.75 0 01-.75.75h-1.5a.75.75 0 010-1.5h1.5A.75.75 0 0116 8zM3 8a.75.75 0 01-.75.75H.75a.75.75 0 010-1.5h1.5A.75.75 0 013 8zm10.657-5.657a.75.75 0 010 1.061l-1.061 1.06a.75.75 0 11-1.06-1.06l1.06-1.06a.75.75 0 011.06 0zm-9.193 9.193a.75.75 0 010 1.06l-1.06 1.061a.75.75 0 11-1.061-1.06l1.06-1.061a.75.75 0 011.061 0z', 'moon': 'M9.598 1.591a.75.75 0 01.785-.175 7 7 0 11-8.967 8.967.75.75 0 01.961-.96 5.5 5.5 0 007.046-7.046.75.75 0 01.175-.786zm1.616 1.945a7 7 0 01-7.678 7.678 5.5 5.5 0 107.678-7.678z', 'sync': 'M1.705 8.005a.75.75 0 0 1 .834.656 5.5 5.5 0 0 0 9.592 2.97l-1.204-1.204a.25.25 0 0 1 .177-.427h3.646a.25.25 0 0 1 .25.25v3.646a.25.25 0 0 1-.427.177l-1.38-1.38A7.002 7.002 0 0 1 1.05 8.84a.75.75 0 0 1 .656-.834ZM8 2.5a5.487 5.487 0 0 0-4.131 1.869l1.204 1.204A.25.25 0 0 1 4.896 6H1.25A.25.25 0 0 1 1 5.75V2.104a.25.25 0 0 1 .427-.177l1.38 1.38A7.002 7.002 0 0 1 14.95 7.16a.75.75 0 0 1-1.49.178A5.5 5.5 0 0 0 8 2.5Z', 'home': 'M6.906.664a1.749 1.749 0 0 1 2.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0 1 13.25 15h-3.5a.75.75 0 0 1-.75-.75V9H7v5.25a.75.75 0 0 1-.75.75h-3.5A1.75 1.75 0 0 1 1 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2Zm1.25 1.171a.25.25 0 0 0-.312 0l-5.25 4.2a.25.25 0 0 0-.094.196v7.019c0 .138.112.25.25.25H5.5V8.25a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 .75.75v5.25h2.75a.25.25 0 0 0 .25-.25V6.23a.25.25 0 0 0-.094-.195Z', 'github': 'M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z', 'copy': 'M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z', 'check': 'M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z'};
 var utterancesLoad=0;
 
 let themeSettings={
@@ -359,7 +362,70 @@ function iFrameLoading(){
     }
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+    const createClipboardHTML = (codeContent, additionalClasses = '') => `
+        <pre class="notranslate"><code class="notranslate">${codeContent}</code></pre>
+        <div class="clipboard-container position-absolute right-0 top-0 ${additionalClasses}">
+            <clipboard-copy class="ClipboardButton btn m-2 p-0" role="button" style="display: inherit;">
+                <svg height="16" width="16" class="octicon octicon-copy m-2"><path d="${IconList["copy"]}"></path></svg>
+                <svg height="16" width="16" class="octicon octicon-check color-fg-success m-2 d-none"><path d="${IconList["check"]}"></path></svg>
+            </clipboard-copy>
+            <div class="copy-feedback">Copied!</div>
+        </div>
+    `;
 
+    const handleCodeElements = (selector = '') => {
+        document.querySelectorAll(selector).forEach(codeElement => {
+            const codeContent = codeElement.innerHTML;
+            const newStructure = document.createElement('div');
+            newStructure.className = 'snippet-clipboard-content position-relative overflow-auto';
+            newStructure.innerHTML = createClipboardHTML(codeContent);
+
+            const parentElement = codeElement.parentElement;
+            if (selector.includes('highlight')) {
+                parentElement.insertBefore(newStructure, codeElement.nextSibling);
+                parentElement.removeChild(codeElement);
+            } else {
+                parentElement.parentElement.replaceChild(newStructure, parentElement);
+            }
+        });
+    };
+
+    handleCodeElements('pre.notranslate > code.notranslate');
+    handleCodeElements('div.highlight > pre.notranslate');
+
+    let currentFeedback = null;
+    document.querySelectorAll('clipboard-copy').forEach(copyButton => {
+        copyButton.addEventListener('click', () => {
+            const codeContent = copyButton.closest('.snippet-clipboard-content').innerText;
+            const tempTextArea = document.createElement('textarea');
+            tempTextArea.value = codeContent;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextArea);
+
+            const copyIcon = copyButton.querySelector('.octicon-copy');
+            const checkIcon = copyButton.querySelector('.octicon-check');
+            const copyFeedback = copyButton.nextElementSibling;
+
+            if (currentFeedback && currentFeedback !== copyFeedback) {currentFeedback.style.display = 'none';}
+            currentFeedback = copyFeedback;
+
+            copyIcon.classList.add('d-none');
+            checkIcon.classList.remove('d-none');
+            copyFeedback.style.display = 'block';
+            copyButton.style.borderColor = 'var(--color-success-fg)';
+
+            setTimeout(() => {
+                copyIcon.classList.remove('d-none');
+                checkIcon.classList.add('d-none');
+                copyFeedback.style.display = 'none';
+                copyButton.style.borderColor = '';
+            }, 2000);
+        });
+    });
+});
 
 </script>
 <script src='https://blog.meekdai.com/Gmeek/plugins/GmeekTOC.js'></script><script src='https://blog.meekdai.com/Gmeek/plugins/lightbox.js'></script><script>MathJax = {tex: {inlineMath: [["$", "$"]]}};</script><script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
